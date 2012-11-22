@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.willetinc.hadoop.mapreduce.dynamodb;
+package com.willetinc.hadoop.mapreduce.dynamodb.io;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 
 public abstract class BSWritable extends AttributeValueWritable {
 

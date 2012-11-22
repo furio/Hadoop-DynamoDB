@@ -14,37 +14,40 @@
  * limitations under the License.
  */
 
-package com.willetinc.hadoop.mapreduce.dynamodb;
+package com.willetinc.hadoop.mapreduce.dynamodb.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.nio.ByteBuffer;
+
 import org.junit.Test;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 
-public class SWritableTest {
+public class BWritableTest {
 
 	@Test
-	public void testConstructorTypesStringAttributeValue() {
-		final String VALUE = "test";
+	public void testConstructorStringAttributeValue() {
+		final byte[] bytes = new byte[] {0xA, 0xB, 0xC};
 		final String FIELD_NAME = "table-name";
 		
-		AttributeValue value = new AttributeValue().withS(VALUE);
-		SWritable writable = new SWritable(FIELD_NAME, value) {};
+		AttributeValue value = new AttributeValue().withBS(ByteBuffer.wrap(bytes));
+		BSWritable writable = new BSWritable(FIELD_NAME, value) {};
 		
-		assertEquals(Types.STRING, writable.getType());
+		assertEquals(Types.BINARY_SET, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());
 		assertEquals(value, writable.getValue());
 	}
 	
 	@Test
-	public void testConstructorTypesString() {
+	public void testConstructorString() {
 		final String FIELD_NAME = "table-name";
 		
-		SWritable writable = new SWritable(FIELD_NAME) {};
+		BSWritable writable = new BSWritable(FIELD_NAME) {};
 		
-		assertEquals(Types.STRING, writable.getType());
+		assertEquals(Types.BINARY_SET, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());
 		assertNull(writable.getValue());
 	}

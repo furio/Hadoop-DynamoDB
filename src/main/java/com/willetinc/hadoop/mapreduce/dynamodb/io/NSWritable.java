@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.willetinc.hadoop.mapreduce.dynamodb;
+package com.willetinc.hadoop.mapreduce.dynamodb.io;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 
-public abstract class SSWritable extends AttributeValueWritable {
+public abstract class NSWritable extends AttributeValueWritable {
 
-	public SSWritable(String fieldName) {
-		super(Types.STRING_SET, fieldName);
+	public NSWritable(String fieldName) {
+		super(Types.NUMBER_SET, fieldName);
 	}
 
-	public SSWritable(String fieldName, AttributeValue value) {
-		super(Types.STRING_SET, fieldName, value);
+	public NSWritable(String fieldName, AttributeValue value) {
+		super(Types.NUMBER_SET, fieldName, value);
 	}
 
 }

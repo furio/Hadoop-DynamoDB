@@ -22,6 +22,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBInputFormat.NullDynamoDBWritable;
+import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public class DynamoDBConfiguration {
 

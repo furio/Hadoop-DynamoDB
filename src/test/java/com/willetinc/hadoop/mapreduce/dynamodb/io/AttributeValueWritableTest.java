@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.willetinc.hadoop.mapreduce.dynamodb;
+package com.willetinc.hadoop.mapreduce.dynamodb.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -22,18 +22,19 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 
-public class NSWritableTest {
+public class AttributeValueWritableTest {
 
 	@Test
 	public void testConstructorTypesStringAttributeValue() {
-		final String VALUE = "077";
+		final String VALUE = "test";
 		final String FIELD_NAME = "table-name";
 		
-		AttributeValue value = new AttributeValue().withNS(VALUE);
-		NSWritable writable = new NSWritable(FIELD_NAME, value) {};
+		AttributeValue value = new AttributeValue().withS(VALUE);
+		AttributeValueWritable writable = new AttributeValueWritable(Types.STRING, FIELD_NAME, value) {};
 		
-		assertEquals(Types.NUMBER_SET, writable.getType());
+		assertEquals(Types.STRING, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());
 		assertEquals(value, writable.getValue());
 	}
@@ -42,9 +43,9 @@ public class NSWritableTest {
 	public void testConstructorTypesString() {
 		final String FIELD_NAME = "table-name";
 		
-		NSWritable writable = new NSWritable(FIELD_NAME) {};
+		AttributeValueWritable writable = new AttributeValueWritable(Types.STRING, FIELD_NAME) {};
 		
-		assertEquals(Types.NUMBER_SET, writable.getType());
+		assertEquals(Types.STRING, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());
 		assertNull(writable.getValue());
 	}

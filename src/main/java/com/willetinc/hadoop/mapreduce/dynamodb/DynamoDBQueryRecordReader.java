@@ -25,6 +25,7 @@ import com.amazonaws.services.dynamodb.model.Condition;
 import com.amazonaws.services.dynamodb.model.QueryRequest;
 import com.amazonaws.services.dynamodb.model.QueryResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat.DynamoDBQueryInputSplit;
+import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public class DynamoDBQueryRecordReader<T extends DynamoDBKeyWritable> extends
 		DynamoDBRecordReader<T> {

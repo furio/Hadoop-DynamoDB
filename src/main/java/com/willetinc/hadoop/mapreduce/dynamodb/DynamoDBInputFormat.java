@@ -37,6 +37,8 @@ import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
+import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
+
 public class DynamoDBInputFormat<T extends DynamoDBKeyWritable>
 		extends InputFormat<LongWritable, T> implements Configurable {
 

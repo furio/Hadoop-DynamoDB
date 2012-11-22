@@ -19,6 +19,8 @@ package com.willetinc.hadoop.mapreduce.dynamodb;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.willetinc.hadoop.mapreduce.dynamodb.io.IOTestSuite;
+
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 		AbstractSplitterTest.class,
@@ -30,14 +32,8 @@ import org.junit.runners.Suite;
 		DynamoDBScanRecordReaderTest.class,
 		TextSplitterTest.class,
 		
-		// AttributeValue writable class tests
-		AttributeValueWritableTest.class,
-		BWritableTest.class,
-		BSWritableTest.class,
-		NWritableTest.class,
-		NSWritableTest.class,
-		SWritableTest.class,
-		SSWritableTest.class})
+		// test suites
+		IOTestSuite.class,})
 public class TestSuite {
 	// nothing
 }

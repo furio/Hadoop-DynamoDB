@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.willetinc.hadoop.mapreduce.dynamodb;
+package com.willetinc.hadoop.mapreduce.dynamodb.io;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -23,6 +23,8 @@ import java.io.IOException;
 import org.apache.hadoop.io.Writable;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.willetinc.hadoop.mapreduce.dynamodb.AttributeValueIOUtils;
+import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 
 public abstract class AttributeValueWritable implements Writable {
 	

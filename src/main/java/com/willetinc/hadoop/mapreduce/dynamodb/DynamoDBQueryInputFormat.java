@@ -30,6 +30,7 @@ import org.apache.hadoop.mapreduce.JobContext;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
 import com.amazonaws.services.dynamodb.model.ComparisonOperator;
+import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable> extends
 		DynamoDBInputFormat<T> {

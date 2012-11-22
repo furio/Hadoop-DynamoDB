@@ -30,6 +30,7 @@ import org.apache.hadoop.util.ReflectionUtils;
 import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodb.model.AttributeValue;
 import com.amazonaws.services.dynamodb.model.Key;
+import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 		extends RecordReader<LongWritable, T> {

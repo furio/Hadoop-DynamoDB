@@ -16,6 +16,10 @@
 
 package com.willetinc.hadoop.mapreduce.dynamodb;
 
+import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBItemWritable;
+import com.willetinc.hadoop.mapreduce.dynamodb.io.NWritable;
+import com.willetinc.hadoop.mapreduce.dynamodb.io.SWritable;
+
 public class CSRecord extends DynamoDBItemWritable {
 	
 	public CSRecord() {

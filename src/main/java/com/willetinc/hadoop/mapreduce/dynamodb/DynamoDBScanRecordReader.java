@@ -24,6 +24,7 @@ import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodb.model.ScanRequest;
 import com.amazonaws.services.dynamodb.model.ScanResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBInputFormat.DynamoDBInputSplit;
+import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public class DynamoDBScanRecordReader<T extends DynamoDBKeyWritable> extends DynamoDBRecordReader<T> {
 
