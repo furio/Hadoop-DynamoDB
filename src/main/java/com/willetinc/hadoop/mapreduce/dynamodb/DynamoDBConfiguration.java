@@ -32,13 +32,9 @@ public class DynamoDBConfiguration {
 
 	public final static String INPUT_TABLE_NAME_PROPERTY = "mapreduce.dynamodb.input.talble.name";
 
-	public static final String INPUT_FIELD_NAMES_PROPERTY = "mapreduce.dynamodb.input.field.names";
-
 	public static final String INPUT_CLASS_PROPERTY = "mapreduce.dynamodb.input.class";
 
 	public static final String OUTPUT_TABLE_NAME_PROPERTY = "mapreduce.dynamodb.output.table.name";
-
-	public static final String OUTPUT_FIELD_NAMES_PROPERTY = "mapreduce.dynamodb.output.field.names";
 
 	public static final String HASH_KEY_TYPE_PROPERTY = "mapreduce.dynamodb.query.hashkey.type";
 	
@@ -92,14 +88,6 @@ public class DynamoDBConfiguration {
 		conf.set(INPUT_TABLE_NAME_PROPERTY, tableName);
 	}
 
-	public String[] getInputFieldNames() {
-		return conf.getStrings(INPUT_FIELD_NAMES_PROPERTY);
-	}
-
-	public void setInputFieldNames(String... fieldNames) {
-		conf.setStrings(INPUT_FIELD_NAMES_PROPERTY, fieldNames);
-	}
-
 	public Class<?> getInputClass() {
 		return conf.getClass(INPUT_CLASS_PROPERTY, NullDynamoDBWritable.class);
 	}
@@ -116,13 +104,4 @@ public class DynamoDBConfiguration {
 	public void setOutputTableName(String tableName) {
 		conf.set(OUTPUT_TABLE_NAME_PROPERTY, tableName);
 	}
-
-	public String[] getOutputFieldNames() {
-		return conf.getStrings(OUTPUT_FIELD_NAMES_PROPERTY);
-	}
-
-	public void setOutputFieldNames(String... fieldNames) {
-		conf.setStrings(OUTPUT_FIELD_NAMES_PROPERTY, fieldNames);
-	}
-
 }

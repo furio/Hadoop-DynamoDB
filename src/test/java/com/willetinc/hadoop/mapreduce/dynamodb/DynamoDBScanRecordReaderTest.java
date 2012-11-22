@@ -87,7 +87,6 @@ public class DynamoDBScanRecordReaderTest {
 				conf, 
 				client, 
 				dbConf, 
-				null, 
 				TABLE_NAME);
 		
 		// first set of results

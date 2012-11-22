@@ -36,9 +36,8 @@ public class DynamoDBScanRecordReader<T extends DynamoDBKeyWritable> extends Dyn
 			Configuration conf,
 			AmazonDynamoDBClient client, 
 			DynamoDBConfiguration dbConf,
-			String[] fields, 
 			String table) {
-		super(split, valueClass, conf, client, dbConf, fields, table);
+		super(split, valueClass, conf, client, dbConf, table);
 	}
 	
 	@Override

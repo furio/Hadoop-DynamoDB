@@ -38,8 +38,8 @@ public class DynamoDBQueryRecordReader<T extends DynamoDBKeyWritable> extends
 	public DynamoDBQueryRecordReader(DynamoDBQueryInputSplit inputSplit,
 			Class<T> valueClass, Configuration conf,
 			AmazonDynamoDBClient client, DynamoDBConfiguration dbConf,
-			String[] fields, String table) {
-		super(inputSplit, valueClass, conf, client, dbConf, fields, table);
+			String table) {
+		super(inputSplit, valueClass, conf, client, dbConf, table);
 		
 		queryRequest = new QueryRequest()
 			.withTableName(getTableName())

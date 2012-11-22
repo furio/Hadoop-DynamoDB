@@ -73,7 +73,6 @@ public class DynamoDBQueryRecordReaderTest {
 				conf, 
 				client, 
 				dbConf, 
-				null, 
 				TABLE_NAME);
 		
 		verify(inputSplit);
@@ -110,7 +109,6 @@ public class DynamoDBQueryRecordReaderTest {
 				conf, 
 				client, 
 				dbConf, 
-				null, 
 				TABLE_NAME);
 		
 		verify(inputSplit);
@@ -164,7 +162,6 @@ public class DynamoDBQueryRecordReaderTest {
 				conf, 
 				client, 
 				dbConf, 
-				null, 
 				TABLE_NAME);
 		
 		// first set of results

@@ -45,8 +45,6 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 
 	private AmazonDynamoDBClient client;
 
-	private String[] fieldNames;
-
 	private String tableName;
 	
 	protected LongWritable key = null;
@@ -65,14 +63,12 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 			Configuration conf,
 			AmazonDynamoDBClient client, 
 			DynamoDBConfiguration dbConf,
-			String[] fields, 
 			String table) {
 		this.valueClass = valueClass;
 		this.split = split;
 		this.conf = conf;
 		this.client = client;
 		this.dbConf = dbConf;
-		this.fieldNames = fields;
 		this.tableName = table;
 	}
 	
@@ -183,14 +179,6 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 
 	protected void setClient(AmazonDynamoDBClient client) {
 		this.client = client;
-	}
-
-	protected String[] getFieldNames() {
-		return fieldNames;
-	}
-
-	protected void setFieldNames(String[] fieldNames) {
-		this.fieldNames = fieldNames;
 	}
 
 	protected String getTableName() {

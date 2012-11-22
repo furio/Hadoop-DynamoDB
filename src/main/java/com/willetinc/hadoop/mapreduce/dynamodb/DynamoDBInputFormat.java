@@ -115,19 +115,17 @@ public class DynamoDBInputFormat<T extends DynamoDBKeyWritable>
 				context.getConfiguration(), 
 				dbConf.getAmazonDynamoDBClient(), 
 				dbConf, 
-				dbConf.getInputFieldNames(), 
 				tableName);
 	}
 	
 	public static void setInput(Job job, 
 			Class<? extends DynamoDBKeyWritable> inputClass,
 			String tableName,String conditions, 
-			String orderBy, String... fieldNames) {
+			String orderBy) {
 		job.setInputFormatClass(DynamoDBInputFormat.class);
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(job.getConfiguration());
 		dbConf.setInputClass(inputClass);
 		dbConf.setInputTableName(tableName);
-		dbConf.setInputFieldNames(fieldNames);
 	}
 
 	@Override
