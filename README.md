@@ -10,12 +10,12 @@ DynamoDB Writables
 Provided are Writable implementations for the six [DynamoDB Data Types](http://docs.amazonwebservices.com/amazondynamodb/latest/developerguide/DataModel.html#DataModelDataTypes). These classes are all abstract as Hadoop requires that Writable implementations must have a default constructor. 
 
 ### Writable Implementations:
-	- NWritable
-	- SWritable
-	- BWritable
-	- NSWritable
-	- SSWritable
-	- BSWritable
+ - NWritable
+ - SWritable
+ - BWritable
+ - NSWritable
+ - SSWritable
+ - BSWritable
 
 ### Defining Columns
 To create a column extend one of these calsses and provide the column name to the super() constructor.
