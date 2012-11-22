@@ -13,6 +13,8 @@ import org.junit.runners.Suite;
 		DynamoDBQueryRecordReaderTest.class,
 		DynamoDBScanRecordReaderTest.class,
 		TextSplitterTest.class,
+		
+		// AttributeValue writable class tests
 		AttributeValueWritableTest.class,
 		BWritableTest.class,
 		BSWritableTest.class,
