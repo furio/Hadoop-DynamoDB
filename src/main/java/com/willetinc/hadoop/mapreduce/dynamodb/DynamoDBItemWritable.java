@@ -3,151 +3,173 @@ package com.willetinc.hadoop.mapreduce.dynamodb;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
 
-public class DynamoDBItemWritable implements DynamoDBKeyWritable {
+public abstract class DynamoDBItemWritable implements DynamoDBKeyWritable {
+	
+	private final AttributeValueWritable hashKey;
+	
+	private final AttributeValueWritable rangeKey;
+	
+	private final AttributeValueWritable[] fields;
+	
+	protected DynamoDBItemWritable(AttributeValueWritable hashKey, AttributeValueWritable rangeKey, AttributeValueWritable...fields) {
+		this.hashKey = hashKey;
+		this.rangeKey = rangeKey;
+		
+		if(null == rangeKey) {
+			this.fields = new AttributeValueWritable[fields.length+1];
+		} else {
+			// has RangeKey
+			this.fields = new AttributeValueWritable[fields.length+2];
+			this.fields[1] = rangeKey;
+		}
+		this.fields[0] = hashKey;
 
-	private String hashKeyFieldName;
-
-	private Types hashKeyType;
-
-	private AttributeValue hashKeyValue;
-
-	private String rangeKeyFieldName;
-
-	private Types rangeKeyType;
-
-	private AttributeValue rangeKeyValue;
-
-	protected DynamoDBItemWritable(
-			String hashKeyFieldName,
-			Types hashKeyType,
-			String rangeKeyFieldName,
-			Types rangeKeyType) {
-		this.hashKeyFieldName = hashKeyFieldName;
-		this.hashKeyType = hashKeyType;
-		this.rangeKeyFieldName = rangeKeyFieldName;
-		this.rangeKeyType = rangeKeyType;
+		// copy remaining fields
+		System.arraycopy(fields, 0, this.fields, 2, fields.length);
 	}
-
-	protected DynamoDBItemWritable(String hashKeyFieldName, Types hashKeyType) {
-		this.hashKeyFieldName = hashKeyFieldName;
-		this.hashKeyType = hashKeyType;
-	}
-
+	
 	@Override
-	public Types getHashKeyType() {
-		return hashKeyType;
+	public AttributeValueWritable getHashKey() {
+		return hashKey;
 	}
-
+	
 	@Override
 	public AttributeValue getHashKeyValue() {
-		return hashKeyValue;
+		return hashKey.getValue();
 	}
-
+	
 	@Override
-	public void setHashKeyValue(AttributeValue hashKeyValue) {
-		this.hashKeyValue = hashKeyValue;
+	public void setHashKeyValue(AttributeValue hashKey) {
+		this.hashKey.setValue(hashKey);
 	}
-
+	
 	@Override
 	public boolean hasRangeKey() {
-		return true;
-	};
-
+		return (null == rangeKey);
+	}
+	
 	@Override
-	public Types setRangeKeyType() {
-		return rangeKeyType;
+	public AttributeValueWritable getRangeKey() {
+		return rangeKey;
 	}
 
 	@Override
 	public AttributeValue getRangeKeyValue() {
-		return rangeKeyValue;
+		return rangeKey.getValue();
+	}
+	
+	@Override
+	public void setRangeKeyValue(AttributeValue rangeKey) {
+		this.rangeKey.setValue(rangeKey);
+	}
+
+	public AttributeValue get(int columnIndex) {
+		return fields[columnIndex].getValue();
+	}
+	
+	public void set(int columnIndex, AttributeValue val) {
+		fields[columnIndex].setValue(val);
+	}
+	
+	public String getString(int columnIndex) {
+		initializeIfNecessary(columnIndex);
+		return fields[columnIndex].getValue().getS();
+	}
+	
+	public void setString(int columnIndex, String val) {
+		initializeIfNecessary(columnIndex);
+		fields[columnIndex].getValue().setS(val);
+	}
+	
+	public String getNumber(int columnIndex) {
+		initializeIfNecessary(columnIndex);
+		return fields[columnIndex].getValue().getN();
+	}
+	
+	public void setNumber(int columnIndex, String val) {
+		initializeIfNecessary(columnIndex);
+		fields[columnIndex].getValue().setN(val);
+	}
+	
+	public ByteBuffer getByteBuffer(int columnIndex) {
+		return fields[columnIndex].getValue().getB();
+	}
+	
+	public void setByteBuffer(int columnIndex, ByteBuffer buf) {
+		initializeIfNecessary(columnIndex);
+		fields[columnIndex].getValue().setB(buf);
+	}
+	
+	public List<String> getStringSet(int columnIndex) {
+		initializeIfNecessary(columnIndex);
+		return fields[columnIndex].getValue().getSS();
+	}
+	
+	public void setStringSet(int columnIndex, Collection<String> vals) {
+		initializeIfNecessary(columnIndex);
+		fields[columnIndex].getValue().setSS(vals);
+	}
+	
+	public List<String> getNumberSet(int columnIndex) {
+		initializeIfNecessary(columnIndex);
+		return fields[columnIndex].getValue().getNS();
+	}
+	
+	public void setNumber(int columnIndex, Collection<String> vals) {
+		initializeIfNecessary(columnIndex);
+		fields[columnIndex].getValue().setNS(vals);
+	}
+	
+	public List<ByteBuffer> getByteBufferSet(int columnIndex) {
+		return fields[columnIndex].getValue().getBS();
+	}
+	
+	public void setByteBufferSet(int columnIndex, Collection<ByteBuffer> buf) {
+		initializeIfNecessary(columnIndex);
+		fields[columnIndex].getValue().setBS(buf);
+	}
+	
+	private void initializeIfNecessary(int columnIndex) {
+		if(null == fields[columnIndex].getValue()) {
+			fields[columnIndex].setValue(new AttributeValue());
+		}
 	}
 
 	@Override
-	public void setRangeKeyValue(AttributeValue rangeKeyValue) {
-		this.rangeKeyValue = rangeKeyValue;
+	public void readFields(DataInput in) throws IOException {
+		for(AttributeValueWritable field: fields) {
+			field.readFields(in);
+		}
 	}
 
 	@Override
-	public final void readFields(Map<String, AttributeValue> in) {
-		hashKeyValue = in.get(hashKeyFieldName);
-		rangeKeyValue = in.get(rangeKeyFieldName);
-		doReadFields(in);
+	public void write(DataOutput out) throws IOException {
+		for(AttributeValueWritable field: fields) {
+			field.write(out);
+		}
 	}
 
 	@Override
-	public final void readFields(DataInput in) throws IOException {
-		hashKeyValue = AttributeValueIOUtils.read(hashKeyType, in);
-		rangeKeyValue = AttributeValueIOUtils.read(rangeKeyType, in);
-		doReadFields(in);
+	public void readFields(Map<String, AttributeValue> in) {
+		for(AttributeValueWritable field: fields) {
+			field.setValue(in.get(field.getFieldName()));
+		}
+		
 	}
 
 	@Override
-	public final void write(DataOutput out) throws IOException {
-		AttributeValueIOUtils.write(hashKeyType, hashKeyValue, out);
-		AttributeValueIOUtils.write(rangeKeyType, rangeKeyValue, out);
-		doWrite(out);
+	public void write(Map<String, AttributeValue> out) {
+		for(AttributeValueWritable field: fields) {
+			out.put(field.getFieldName(), field.getValue());
+		}
 	}
-
-	@Override
-	public final void write(Map<String, AttributeValue> out) {
-		out.put(hashKeyFieldName, hashKeyValue);
-		out.put(rangeKeyFieldName, rangeKeyValue);
-		doWrite(out);
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result =
-				prime
-						* result
-						+ ((hashKeyValue == null) ? 0 : hashKeyValue.hashCode());
-		result =
-				prime
-						* result
-						+ ((rangeKeyValue == null) ? 0 : rangeKeyValue
-								.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DynamoDBItemWritable other = (DynamoDBItemWritable) obj;
-		if (hashKeyValue == null) {
-			if (other.hashKeyValue != null)
-				return false;
-		} else if (!hashKeyValue.equals(other.hashKeyValue))
-			return false;
-		if (rangeKeyValue == null) {
-			if (other.rangeKeyValue != null)
-				return false;
-		} else if (!rangeKeyValue.equals(other.rangeKeyValue))
-			return false;
-		return true;
-	}
-
-	protected void doReadFields(Map<String, AttributeValue> resultSet) {
-	};
-
-	protected void doReadFields(DataInput in) {
-	};
-
-	protected void doWrite(Map<String, AttributeValue> out) {
-	};
-
-	protected void doWrite(DataOutput out) {
-	}
-
+	
+	
 }
