@@ -12,7 +12,14 @@ import org.junit.runners.Suite;
 		DynamoDBQueryInputFormatTest.class,
 		DynamoDBQueryRecordReaderTest.class,
 		DynamoDBScanRecordReaderTest.class,
-		TextSplitterTest.class })
+		TextSplitterTest.class,
+		AttributeValueWritableTest.class,
+		BWritableTest.class,
+		BSWritableTest.class,
+		NWritableTest.class,
+		NSWritableTest.class,
+		SWritableTest.class,
+		SSWritableTest.class})
 public class TestSuite {
 	// nothing
 }
