@@ -8,7 +8,7 @@ import org.apache.hadoop.io.Writable;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
 
-public class AttributeValueWritable implements Writable {
+public abstract class AttributeValueWritable implements Writable {
 	
 	private final String fieldName;
 	

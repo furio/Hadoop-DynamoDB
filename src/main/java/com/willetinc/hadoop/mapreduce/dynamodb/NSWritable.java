@@ -2,7 +2,7 @@ package com.willetinc.hadoop.mapreduce.dynamodb;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
 
-public class NSWritable extends AttributeValueWritable {
+public abstract class NSWritable extends AttributeValueWritable {
 
 	public NSWritable(String fieldName) {
 		super(Types.NUMBER_SET, fieldName);

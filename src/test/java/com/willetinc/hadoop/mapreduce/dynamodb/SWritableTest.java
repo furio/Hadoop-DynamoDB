@@ -15,7 +15,7 @@ public class SWritableTest {
 		final String FIELD_NAME = "table-name";
 		
 		AttributeValue value = new AttributeValue().withS(VALUE);
-		SWritable writable = new SWritable(FIELD_NAME, value);
+		SWritable writable = new SWritable(FIELD_NAME, value) {};
 		
 		assertEquals(Types.STRING, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());
@@ -26,7 +26,7 @@ public class SWritableTest {
 	public void testConstructorTypesString() {
 		final String FIELD_NAME = "table-name";
 		
-		SWritable writable = new SWritable(FIELD_NAME);
+		SWritable writable = new SWritable(FIELD_NAME) {};
 		
 		assertEquals(Types.STRING, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());

@@ -2,7 +2,7 @@ package com.willetinc.hadoop.mapreduce.dynamodb;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
 
-public class SWritable extends AttributeValueWritable {
+public abstract class SWritable extends AttributeValueWritable {
 
 	public SWritable(String fieldName) {
 		super(Types.STRING, fieldName);

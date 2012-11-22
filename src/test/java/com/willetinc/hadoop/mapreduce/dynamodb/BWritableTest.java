@@ -17,7 +17,7 @@ public class BWritableTest {
 		final String FIELD_NAME = "table-name";
 		
 		AttributeValue value = new AttributeValue().withBS(ByteBuffer.wrap(bytes));
-		BSWritable writable = new BSWritable(FIELD_NAME, value);
+		BSWritable writable = new BSWritable(FIELD_NAME, value) {};
 		
 		assertEquals(Types.BINARY_SET, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());
@@ -28,7 +28,7 @@ public class BWritableTest {
 	public void testConstructorString() {
 		final String FIELD_NAME = "table-name";
 		
-		BSWritable writable = new BSWritable(FIELD_NAME);
+		BSWritable writable = new BSWritable(FIELD_NAME) {};
 		
 		assertEquals(Types.BINARY_SET, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());

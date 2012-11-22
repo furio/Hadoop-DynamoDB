@@ -2,7 +2,7 @@ package com.willetinc.hadoop.mapreduce.dynamodb;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
 
-public class BSWritable extends AttributeValueWritable {
+public abstract class BSWritable extends AttributeValueWritable {
 
 	public BSWritable(String fieldName) {
 		super(Types.BINARY_SET, fieldName);

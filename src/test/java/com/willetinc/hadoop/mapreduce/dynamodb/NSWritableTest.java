@@ -15,7 +15,7 @@ public class NSWritableTest {
 		final String FIELD_NAME = "table-name";
 		
 		AttributeValue value = new AttributeValue().withNS(VALUE);
-		NSWritable writable = new NSWritable(FIELD_NAME, value);
+		NSWritable writable = new NSWritable(FIELD_NAME, value) {};
 		
 		assertEquals(Types.NUMBER_SET, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());
@@ -26,7 +26,7 @@ public class NSWritableTest {
 	public void testConstructorTypesString() {
 		final String FIELD_NAME = "table-name";
 		
-		NSWritable writable = new NSWritable(FIELD_NAME);
+		NSWritable writable = new NSWritable(FIELD_NAME) {};
 		
 		assertEquals(Types.NUMBER_SET, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());

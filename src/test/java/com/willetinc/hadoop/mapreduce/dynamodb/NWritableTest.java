@@ -15,7 +15,7 @@ public class NWritableTest {
 		final String FIELD_NAME = "table-name";
 		
 		AttributeValue value = new AttributeValue().withN(VALUE);
-		NWritable writable = new NWritable(FIELD_NAME, value);
+		NWritable writable = new NWritable(FIELD_NAME, value) {};
 		
 		assertEquals(Types.NUMBER, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());
@@ -26,7 +26,7 @@ public class NWritableTest {
 	public void testConstructorTypesString() {
 		final String FIELD_NAME = "table-name";
 		
-		NWritable writable = new NWritable(FIELD_NAME);
+		NWritable writable = new NWritable(FIELD_NAME) {};
 		
 		assertEquals(Types.NUMBER, writable.getType());
 		assertEquals(FIELD_NAME, writable.getFieldName());
