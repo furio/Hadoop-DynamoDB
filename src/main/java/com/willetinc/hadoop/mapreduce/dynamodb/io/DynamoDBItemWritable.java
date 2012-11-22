@@ -212,4 +212,37 @@ public abstract class DynamoDBItemWritable implements DynamoDBKeyWritable {
 		}
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((hashKey == null) ? 0 : hashKey.hashCode());
+		result = prime
+				* result
+				+ ((rangeKey == null) ? 0 : rangeKey.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DynamoDBItemWritable other = (DynamoDBItemWritable) obj;
+		if (hashKey == null) {
+			if (other.hashKey != null)
+				return false;
+		} else if (!hashKey.equals(other.hashKey))
+			return false;
+		if (rangeKey == null) {
+			if (other.rangeKey != null)
+				return false;
+		} else if (!rangeKey.equals(other.rangeKey))
+			return false;
+		return true;
+	}
+
 }
