@@ -21,7 +21,7 @@ import org.apache.hadoop.conf.Configuration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBInputFormat.NullDynamoDBWritable;
+import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanInputFormat.NullDynamoDBWritable;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public class DynamoDBConfiguration {
@@ -52,12 +52,10 @@ public class DynamoDBConfiguration {
 	
 	public static final String RANGE_KEY_INTERPOLATE_MAX_VALUE_PROPERTY = "mapreduce.dynamodb.query.rangekey.interpolate.maxvalue";
 	
-	public static void configureDB(
+	public static void setCredentals(
 			Configuration conf, 
-			String tableName, 
 			String accessKey, 
 			String secretKey ) {
-		conf.set(INPUT_TABLE_NAME_PROPERTY, tableName);
 		conf.set(ACCESS_KEY_PROPERTY, accessKey);
 		conf.set(SECRET_KEY_PROPERTY, secretKey);
 	}
