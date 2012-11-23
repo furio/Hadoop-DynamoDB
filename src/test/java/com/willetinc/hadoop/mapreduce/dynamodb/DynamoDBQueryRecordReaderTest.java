@@ -52,7 +52,7 @@ public class DynamoDBQueryRecordReaderTest {
 	public void testConstructor() throws IOException {
 		Job job = new Job();
 		Configuration conf = job.getConfiguration();
-		DynamoDBConfiguration.configureDB(conf, TABLE_NAME, ACCESS_KEY, SECRET_KEY);
+		DynamoDBConfiguration.setCredentals(conf, ACCESS_KEY, SECRET_KEY);
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(conf);
 		
 		DynamoDBQueryInputSplit inputSplit = createStrictMock(DynamoDBQueryInputSplit.class);
@@ -83,7 +83,7 @@ public class DynamoDBQueryRecordReaderTest {
 	public void testConstructorWithRangeKey() throws IOException {
 		Job job = new Job();
 		Configuration conf = job.getConfiguration();
-		DynamoDBConfiguration.configureDB(conf, TABLE_NAME, ACCESS_KEY, SECRET_KEY);
+		DynamoDBConfiguration.setCredentals(conf, ACCESS_KEY, SECRET_KEY);
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(conf);
 		
 		DynamoDBQueryInputSplit inputSplit = createStrictMock(DynamoDBQueryInputSplit.class);
@@ -120,8 +120,7 @@ public class DynamoDBQueryRecordReaderTest {
 
 		Job job = new Job();
 		Configuration conf = job.getConfiguration();
-		DynamoDBConfiguration.configureDB(conf, TABLE_NAME, ACCESS_KEY,
-				SECRET_KEY);
+		DynamoDBConfiguration.setCredentals(conf, ACCESS_KEY, SECRET_KEY);
 
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(conf);
 

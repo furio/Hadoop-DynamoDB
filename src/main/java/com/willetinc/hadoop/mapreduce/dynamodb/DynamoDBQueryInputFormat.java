@@ -24,19 +24,25 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.JobContext;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 import com.amazonaws.services.dynamodb.model.AttributeValue;
 import com.amazonaws.services.dynamodb.model.ComparisonOperator;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
-public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable> extends
-		DynamoDBInputFormat<T> {
+public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable> 
+	extends InputFormat<LongWritable, T> implements Configurable {
 
 	public static class DynamoDBQueryInputSplit extends
-			DynamoDBInputFormat.DynamoDBInputSplit {
+			DynamoDBScanInputFormat.DynamoDBInputSplit {
 
 		private Types hashKeyType = Types.STRING;
 
@@ -82,7 +88,6 @@ public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable> extends
 			return 0; // unfortunately, we don't know this.
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		public void readFields(DataInput in) throws IOException {
 			this.hashKeyType = Types.values()[in.readInt()];
@@ -93,7 +98,6 @@ public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable> extends
 			this.rangeKeyOperator = ComparisonOperator.values()[in.readInt()];
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		public void write(DataOutput out) throws IOException {
 			out.writeInt(hashKeyType.ordinal());
@@ -140,7 +144,28 @@ public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable> extends
 			return rangeKeyValues;
 		}
 	}
+	
+	private DynamoDBConfiguration dbConf;
+	
+	private String tableName;
 
+	public Configuration getConf() {
+		return dbConf.getConf();
+	}
+
+	public void setConf(Configuration conf) {
+		dbConf = new DynamoDBConfiguration(conf);
+		tableName = dbConf.getInputTableName();
+	}
+	
+	public DynamoDBConfiguration getDBConf() {
+		return dbConf;
+	}
+	
+	public String getTableName() {
+		return tableName;
+	}
+	
 	@Override
 	public List<InputSplit> getSplits(JobContext job) throws IOException {
 		Configuration conf = job.getConfiguration();
@@ -153,15 +178,50 @@ public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable> extends
 	protected DynamoDBSplitter getSplitter(Types rangeKeyType) {
 		switch (rangeKeyType) {
 		case STRING:
-			return null;
+			return new TextSplitter();
 		case NUMBER:
 			new BigDecimalSplitter();
 		case BINARY:
-			return null;
+			return new BinarySplitter();
 		default:
 			return new DefaultSplitter();
 		}
-
+	}
+	
+	@Override
+	public RecordReader<LongWritable, T> createRecordReader(InputSplit inputSplit,
+			TaskAttemptContext context) throws IOException, InterruptedException {
+		setConf(context.getConfiguration());
+		
+		@SuppressWarnings("unchecked")
+		Class<T> inputClass = (Class<T>) (dbConf.getInputClass());
+		return new DynamoDBQueryRecordReader<T>(
+				(DynamoDBQueryInputSplit) inputSplit,
+				inputClass, 
+				context.getConfiguration(), 
+				dbConf.getAmazonDynamoDBClient(), 
+				dbConf, 
+				tableName);
+	}
+	
+	public static void setCredentials(
+			Job job,
+			String accessKey,
+			String secretKey) {
+		
+		DynamoDBConfiguration.setCredentals(
+				job.getConfiguration(),
+				accessKey,
+				secretKey);
+	}
+	
+	public static void setInput(Job job, 
+			Class<? extends DynamoDBKeyWritable> inputClass,
+			String tableName) {
+		job.setInputFormatClass(DynamoDBQueryInputFormat.class);
+		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(job.getConfiguration());
+		dbConf.setInputClass(inputClass);
+		dbConf.setInputTableName(tableName);
 	}
 
 	public static Types getHashKeyType(Configuration conf) {

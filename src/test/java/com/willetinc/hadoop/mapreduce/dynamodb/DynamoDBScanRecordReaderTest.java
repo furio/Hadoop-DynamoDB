@@ -38,7 +38,7 @@ import com.amazonaws.services.dynamodb.model.ScanResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBConfiguration;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBRecordReader;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanRecordReader;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBInputFormat.DynamoDBInputSplit;
+import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanInputFormat.DynamoDBInputSplit;
 
 public class DynamoDBScanRecordReaderTest {
 	
@@ -49,9 +49,7 @@ public class DynamoDBScanRecordReaderTest {
 		final String SECRET_KEY = "secret_key";
 
 		Configuration conf = new Configuration();
-		DynamoDBConfiguration.configureDB(conf, TABLE_NAME, ACCESS_KEY,
-				SECRET_KEY);
-
+		DynamoDBConfiguration.setCredentals(conf, ACCESS_KEY, SECRET_KEY);
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(conf);
 
 		DynamoDBInputSplit inputSplit = createStrictMock(DynamoDBInputSplit.class);

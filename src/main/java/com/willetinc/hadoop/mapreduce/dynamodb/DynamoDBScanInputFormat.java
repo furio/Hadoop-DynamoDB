@@ -19,17 +19,14 @@ package com.willetinc.hadoop.mapreduce.dynamodb;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapred.lib.db.DBWritable;
 import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
@@ -37,23 +34,62 @@ import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
+import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.willetinc.hadoop.mapreduce.dynamodb.io.AttributeValueWritable;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
-public class DynamoDBInputFormat<T extends DynamoDBKeyWritable>
-		extends InputFormat<LongWritable, T> implements Configurable {
+public class DynamoDBScanInputFormat<T extends DynamoDBKeyWritable> extends
+		InputFormat<LongWritable, T> implements Configurable {
 
-	public static class NullDynamoDBWritable implements DBWritable, Writable {
+	public static class NullDynamoDBWritable implements DynamoDBKeyWritable {
 
+		@Override
 		public void readFields(DataInput in) throws IOException {
 		}
 
+		@Override
 		public void write(DataOutput out) throws IOException {
 		}
 
-		public void readFields(ResultSet resultSet) throws SQLException {
+		@Override
+		public AttributeValueWritable getHashKey() {
+			return null;
 		}
 
-		public void write(PreparedStatement statement) throws SQLException {
+		@Override
+		public AttributeValue getHashKeyValue() {
+			return null;
+		}
+
+		@Override
+		public void setHashKeyValue(AttributeValue value) {
+		}
+
+		@Override
+		public boolean hasRangeKey() {
+			return false;
+		}
+
+		@Override
+		public AttributeValueWritable getRangeKey() {
+			return null;
+		}
+
+		@Override
+		public AttributeValue getRangeKeyValue() {
+			return null;
+		}
+
+		@Override
+		public void setRangeKeyValue(AttributeValue value) {
+		}
+
+		@Override
+		public void readFields(Map<String, AttributeValue> in) {
+		}
+
+		@Override
+		public void write(Map<String, AttributeValue> out) {
 		}
 	}
 
@@ -86,8 +122,18 @@ public class DynamoDBInputFormat<T extends DynamoDBKeyWritable>
 
 	}
 
+	public static void setCredentials(
+			Job job,
+			String accessKey,
+			String secretKey) {
+		DynamoDBConfiguration.setCredentals(
+				job.getConfiguration(),
+				accessKey,
+				secretKey);
+	}
+
 	private DynamoDBConfiguration dbConf;
-	
+
 	private String tableName;
 
 	public Configuration getConf() {
@@ -98,38 +144,48 @@ public class DynamoDBInputFormat<T extends DynamoDBKeyWritable>
 		dbConf = new DynamoDBConfiguration(conf);
 		tableName = dbConf.getInputTableName();
 	}
-	
+
 	public DynamoDBConfiguration getDBConf() {
 		return dbConf;
 	}
 
+	public String getTableName() {
+		return tableName;
+	}
+
 	@Override
-	public RecordReader<LongWritable, T> createRecordReader(InputSplit inputSplit,
-			TaskAttemptContext context) throws IOException, InterruptedException {
-		
+	public RecordReader<LongWritable, T> createRecordReader(
+			InputSplit inputSplit,
+			TaskAttemptContext context)
+			throws IOException,
+			InterruptedException {
+		setConf(context.getConfiguration());
+
 		@SuppressWarnings("unchecked")
 		Class<T> inputClass = (Class<T>) (dbConf.getInputClass());
 		return new DynamoDBScanRecordReader<T>(
 				(DynamoDBInputSplit) inputSplit,
-				inputClass, 
-				context.getConfiguration(), 
-				dbConf.getAmazonDynamoDBClient(), 
-				dbConf, 
+				inputClass,
+				context.getConfiguration(),
+				dbConf.getAmazonDynamoDBClient(),
+				dbConf,
 				tableName);
 	}
-	
-	public static void setInput(Job job, 
+
+	public static void setInput(
+			Job job,
 			Class<? extends DynamoDBKeyWritable> inputClass,
-			String tableName,String conditions, 
-			String orderBy) {
-		job.setInputFormatClass(DynamoDBInputFormat.class);
-		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(job.getConfiguration());
+			String tableName) {
+		job.setInputFormatClass(DynamoDBScanInputFormat.class);
+		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(
+				job.getConfiguration());
 		dbConf.setInputClass(inputClass);
 		dbConf.setInputTableName(tableName);
 	}
 
 	@Override
-	public List<InputSplit> getSplits(JobContext context) throws IOException,
+	public List<InputSplit> getSplits(JobContext context)
+			throws IOException,
 			InterruptedException {
 		List<InputSplit> splits = new ArrayList<InputSplit>();
 		splits.add(new DynamoDBInputSplit());
