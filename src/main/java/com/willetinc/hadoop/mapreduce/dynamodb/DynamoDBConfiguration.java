@@ -94,7 +94,7 @@ public class DynamoDBConfiguration {
 
 	public void setInputClass(Class<? extends DynamoDBKeyWritable> inputClass) {
 		conf.setClass(INPUT_CLASS_PROPERTY, inputClass,
-				NullDynamoDBWritable.class);
+				DynamoDBKeyWritable.class);
 	}
 
 	public String getOutputTableName() {
