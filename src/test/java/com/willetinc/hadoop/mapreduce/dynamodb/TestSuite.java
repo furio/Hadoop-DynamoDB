@@ -30,6 +30,7 @@ import com.willetinc.hadoop.mapreduce.dynamodb.io.IOTestSuite;
 		DynamoDBQueryInputFormatTest.class,
 		DynamoDBQueryRecordReaderTest.class,
 		DynamoDBScanRecordReaderTest.class,
+		DynamoDBOutputFormatTest.class,
 		TextSplitterTest.class,
 		
 		// test suites
