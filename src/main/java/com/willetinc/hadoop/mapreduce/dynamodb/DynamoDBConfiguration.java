@@ -29,6 +29,8 @@ public class DynamoDBConfiguration {
 	public final static String ACCESS_KEY_PROPERTY = "mapreduce.dynamodb.access.key";
 
 	public final static String SECRET_KEY_PROPERTY = "mapreduce.dynamodb.secret.key";
+	
+	public final static String DYNAMODB_ENDPOINT = "mapreduce.dynamodb.endpoint";
 
 	public final static String INPUT_TABLE_NAME_PROPERTY = "mapreduce.dynamodb.input.talble.name";
 
@@ -75,7 +77,21 @@ public class DynamoDBConfiguration {
 		String secretKey = conf.get(SECRET_KEY_PROPERTY);
 		AWSCredentials credentials = new BasicAWSCredentials(accessKey,
 				secretKey);
-		return new AmazonDynamoDBClient(credentials);
+		
+		AmazonDynamoDBClient client = new AmazonDynamoDBClient(credentials);
+		String endpoint = conf.get(DYNAMODB_ENDPOINT);
+		if(null != endpoint) {
+			client.setEndpoint(endpoint);
+		}
+		return client;
+	}
+	
+	public String getDynamoDBEndpoint() {
+		return conf.get(DYNAMODB_ENDPOINT);
+	}
+	
+	public void setDynamoDBEndpoint(String endpoint) {
+		conf.set(DYNAMODB_ENDPOINT, endpoint);
 	}
 
 	public String getInputTableName() {

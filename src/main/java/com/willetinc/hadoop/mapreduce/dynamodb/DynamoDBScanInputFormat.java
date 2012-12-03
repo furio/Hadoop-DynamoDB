@@ -131,6 +131,16 @@ public class DynamoDBScanInputFormat<T extends DynamoDBKeyWritable> extends
 				accessKey,
 				secretKey);
 	}
+	
+	public static void setEndpoint(Job job, String endpoint) {
+		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(job.getConfiguration());
+		dbConf.setDynamoDBEndpoint(endpoint);
+	}
+	
+	public static String getEndpoint(Job job) {
+		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(job.getConfiguration());
+		return dbConf.getDynamoDBEndpoint();
+	}
 
 	private DynamoDBConfiguration dbConf;
 

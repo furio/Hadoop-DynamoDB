@@ -112,6 +112,7 @@ public class DynamoDBOutputFormatTest {
 		expect(conf.get(DynamoDBConfiguration.ACCESS_KEY_PROPERTY)).andReturn(ACCESS_KEY);
 		expect(conf.get(DynamoDBConfiguration.SECRET_KEY_PROPERTY)).andReturn(SECRET_KEY);
 		expect(conf.get(DynamoDBConfiguration.OUTPUT_TABLE_NAME_PROPERTY)).andReturn(TABLE_NAME);
+		expect(conf.get(DynamoDBConfiguration.DYNAMODB_ENDPOINT)).andReturn("test");
 		
 		replay(context);
 		replay(conf);
