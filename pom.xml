@@ -14,19 +14,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<distributionManagement>
-		<repository>
-			<id>${repos.release.id}</id>
-			<name>Release Repository</name>
-			<url>${repos.release.url}</url>
-		</repository>
-		<snapshotRepository>
-			<id>${repos.snapshot.id}</id>
-			<name>Snapshot Repository</name>
-			<url>${repos.snapshot.url}</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
