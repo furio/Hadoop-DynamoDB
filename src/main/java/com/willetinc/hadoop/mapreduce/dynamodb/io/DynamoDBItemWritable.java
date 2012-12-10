@@ -140,7 +140,12 @@ public abstract class DynamoDBItemWritable implements DynamoDBKeyWritable {
 	}
 
 	public ByteBuffer getByteBuffer(int columnIndex) {
-		return fields[columnIndex].getValue().getB();
+		AttributeValue value = fields[columnIndex].getValue();
+		if(null != value) {
+			return  value.getB();
+		} else {
+			return null;
+		}
 	}
 
 	public void setByteBuffer(int columnIndex, ByteBuffer buf) {
