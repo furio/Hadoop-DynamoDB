@@ -29,10 +29,10 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.easymock.Capture;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.PutItemRequest;
-import com.amazonaws.services.dynamodb.model.PutItemResult;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBItemWritable;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.NWritable;
 

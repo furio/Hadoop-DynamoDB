@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.apache.hadoop.io.Writable;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 public interface DynamoDBKeyWritable extends Writable {
 	

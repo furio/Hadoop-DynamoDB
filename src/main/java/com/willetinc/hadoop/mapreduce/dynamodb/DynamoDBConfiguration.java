@@ -20,7 +20,7 @@ import org.apache.hadoop.conf.Configuration;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanInputFormat.NullDynamoDBWritable;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 

@@ -30,11 +30,10 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.Key;
-import com.amazonaws.services.dynamodb.model.ScanRequest;
-import com.amazonaws.services.dynamodb.model.ScanResult;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBConfiguration;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBRecordReader;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanRecordReader;
@@ -56,7 +55,8 @@ public class DynamoDBScanRecordReaderTest {
 		AmazonDynamoDBClient client = createStrictMock(AmazonDynamoDBClient.class);
 		
 		ScanResult result = createStrictMock(ScanResult.class);
-		Key lastKey = createStrictMock(Key.class);
+		@SuppressWarnings("unchecked")
+		Map<String, AttributeValue> lastKey = createStrictMock(Map.class);
 		List<Map<String, AttributeValue>> list = new ArrayList<Map<String, AttributeValue>>();
 		Map<String, AttributeValue> value = new HashMap<String, AttributeValue>();
 		value.put("storeid", new AttributeValue().withN("22"));

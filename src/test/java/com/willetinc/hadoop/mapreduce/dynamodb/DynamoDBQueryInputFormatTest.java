@@ -35,8 +35,8 @@ import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBConfiguration;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
 import com.willetinc.hadoop.mapreduce.dynamodb.Types;

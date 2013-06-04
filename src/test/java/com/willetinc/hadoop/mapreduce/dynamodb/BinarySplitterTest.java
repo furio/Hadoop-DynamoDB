@@ -29,7 +29,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.willetinc.hadoop.mapreduce.dynamodb.BinarySplitter;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
 import com.willetinc.hadoop.mapreduce.dynamodb.Types;

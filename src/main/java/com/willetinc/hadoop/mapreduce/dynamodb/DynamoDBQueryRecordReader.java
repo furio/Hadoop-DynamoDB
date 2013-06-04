@@ -16,14 +16,18 @@
 
 package com.willetinc.hadoop.mapreduce.dynamodb;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.Condition;
-import com.amazonaws.services.dynamodb.model.QueryRequest;
-import com.amazonaws.services.dynamodb.model.QueryResult;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat.DynamoDBQueryInputSplit;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
@@ -41,16 +45,24 @@ public class DynamoDBQueryRecordReader<T extends DynamoDBKeyWritable> extends
 			String table) {
 		super(inputSplit, valueClass, conf, client, dbConf, table);
 		
+		Condition hashKeyCondition = new Condition()
+		.withComparisonOperator(ComparisonOperator.EQ.toString())
+		.withAttributeValueList(inputSplit.getHashKeyValue());
+		
+		Map<String, Condition> keyConditions = new HashMap<String, Condition>();
+		keyConditions.put("Id", hashKeyCondition);
+		
 		queryRequest = new QueryRequest()
 			.withTableName(getTableName())
-			.withHashKeyValue(inputSplit.getHashKeyValue());
+			.withKeyConditions(keyConditions);
 		
 		// configure range key if it exists
 		if(inputSplit.hasRangeKey()) {
-			Condition condition = new Condition()
+			Condition rangeKeyCondition = new Condition()
 				.withComparisonOperator(inputSplit.getRangeKeyOperator())
 				.withAttributeValueList(inputSplit.getRangeKeyValues());
-			queryRequest.setRangeKeyCondition(condition);
+			keyConditions.put("Id", rangeKeyCondition);
+			queryRequest.setKeyConditions(keyConditions);
 		}
 		
 	}

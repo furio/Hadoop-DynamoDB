@@ -31,12 +31,11 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.Job;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
-import com.amazonaws.services.dynamodb.model.Key;
-import com.amazonaws.services.dynamodb.model.QueryRequest;
-import com.amazonaws.services.dynamodb.model.QueryResult;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBConfiguration;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryRecordReader;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBRecordReader;
@@ -129,7 +128,8 @@ public class DynamoDBQueryRecordReaderTest {
 		AmazonDynamoDBClient client = createStrictMock(AmazonDynamoDBClient.class);
 		
 		QueryResult result = createStrictMock(QueryResult.class);
-		Key lastKey = createStrictMock(Key.class);
+		@SuppressWarnings("unchecked")
+		Map<String, AttributeValue> lastKey = createStrictMock(Map.class);
 		List<Map<String, AttributeValue>> list = new ArrayList<Map<String, AttributeValue>>();
 		
 		Map<String, AttributeValue> value = new HashMap<String, AttributeValue>();

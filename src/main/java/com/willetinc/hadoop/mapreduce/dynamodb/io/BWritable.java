@@ -16,7 +16,7 @@
 
 package com.willetinc.hadoop.mapreduce.dynamodb.io;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 
 public abstract class BWritable extends AttributeValueWritable {
