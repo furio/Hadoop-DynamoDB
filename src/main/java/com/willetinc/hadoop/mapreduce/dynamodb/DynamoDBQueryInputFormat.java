@@ -114,10 +114,6 @@ public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable>
 			return hashKeyValue;
 		}
 
-		public Types getRangeType() {
-			return rangeKeyType;
-		}
-
 		public Types getHashKeyType() {
 			return hashKeyType;
 		}
