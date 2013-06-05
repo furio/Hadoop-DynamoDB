@@ -41,11 +41,13 @@ public class BigDecimalSplitterTest {
 		final String VALUE = "007";
 		final Types hashKeyType = Types.NUMBER;
 		final AttributeValue hashKeyValue = new AttributeValue().withN(VALUE);
+		final String hashKeyName = "Id";
 		final Types rangeKeyType = Types.NUMBER;
 		final AttributeValue minRangeKeyValue =
 				new AttributeValue().withN("0.0");
 		final AttributeValue maxRangeKeyValue =
 				new AttributeValue().withN("100.0");
+		final String rangeKeyName = "range";
 
 		Configuration conf = createMock(Configuration.class);
 		BigDecimalSplitter splitter = new BigDecimalSplitter();
@@ -57,9 +59,11 @@ public class BigDecimalSplitterTest {
 				inputSplits,
 				hashKeyType,
 				hashKeyValue,
+				hashKeyName,
 				rangeKeyType,
 				minRangeKeyValue,
 				maxRangeKeyValue,
+				rangeKeyName,
 				NUM_RANGE_SPLITS);
 
 		assertEquals(2, inputSplits.size());

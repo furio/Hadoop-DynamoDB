@@ -43,11 +43,13 @@ public class BinarySplitterTest {
 		final String VALUE = "007";
 		final Types hashKeyType = Types.NUMBER;
 		final AttributeValue hashKeyValue = new AttributeValue().withN(VALUE);
+		final String hashKeyName = "Id";
 		final Types rangeKeyType = Types.STRING;
 		final AttributeValue minRangeKeyValue =
 				new AttributeValue().withB(ByteBuffer.wrap(new byte[] {0x0, 0x0}));
 		final AttributeValue maxRangeKeyValue =
 				new AttributeValue().withB(ByteBuffer.wrap(new byte[] {0x0, 0xF}));
+		final String rangeKeyName = "range";
 
 		Configuration conf = createMock(Configuration.class);
 		BinarySplitter splitter = new BinarySplitter();
@@ -59,9 +61,11 @@ public class BinarySplitterTest {
 				inputSplits,
 				hashKeyType,
 				hashKeyValue,
+				hashKeyName,
 				rangeKeyType,
 				minRangeKeyValue,
 				maxRangeKeyValue,
+				rangeKeyName,
 				NUM_RANGE_SPLITS);
 
 		assertEquals(2, inputSplits.size());

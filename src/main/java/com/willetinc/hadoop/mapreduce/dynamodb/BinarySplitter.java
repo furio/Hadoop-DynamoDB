@@ -64,9 +64,11 @@ public class BinarySplitter extends BigDecimalSplitter {
 			List<InputSplit> splits,
 			Types hashKeyType,
 			AttributeValue hashKeyValue,
+			String hashKeyName,
 			Types rangeKeyType,
 			AttributeValue minRangeKeyValue,
 			AttributeValue maxRangeKeyValue,
+			String rangeKeyName,
 			int numRangeSplits) {
 
 		byte[] minBytes = minRangeKeyValue.getB().array();
@@ -121,8 +123,10 @@ public class BinarySplitter extends BigDecimalSplitter {
 			splits.add(new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
+					hashKeyName,
 					rangeKeyType,
 					rangeKeyValues,
+					rangeKeyName,
 					ComparisonOperator.BETWEEN));
 
 			start = ArrayUtils.addAll(end, new byte[] { 0x0 });

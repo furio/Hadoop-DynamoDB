@@ -41,11 +41,13 @@ public class TextSplitterTest {
 		final String VALUE = "007";
 		final Types hashKeyType = Types.NUMBER;
 		final AttributeValue hashKeyValue = new AttributeValue().withN(VALUE);
+		final String hashKeyName = "Id";
 		final Types rangeKeyType = Types.STRING;
 		final AttributeValue minRangeKeyValue =
 				new AttributeValue().withS("AA");
 		final AttributeValue maxRangeKeyValue =
 				new AttributeValue().withS("BZ");
+		final String rangeKeyName = "range";
 
 		Configuration conf = createMock(Configuration.class);
 		TextSplitter splitter = new TextSplitter();
@@ -57,9 +59,11 @@ public class TextSplitterTest {
 				inputSplits,
 				hashKeyType,
 				hashKeyValue,
+				hashKeyName,
 				rangeKeyType,
 				minRangeKeyValue,
 				maxRangeKeyValue,
+				rangeKeyName,
 				NUM_RANGE_SPLITS);
 
 		assertEquals(2, inputSplits.size());

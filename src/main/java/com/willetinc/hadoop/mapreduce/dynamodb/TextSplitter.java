@@ -53,9 +53,11 @@ public class TextSplitter extends BigDecimalSplitter {
 			List<InputSplit> splits,
 			Types hashKeyType,
 			AttributeValue hashKeyValue,
+			String hashKeyName,
 			Types rangeKeyType,
 			AttributeValue minRangeKeyValue,
 			AttributeValue maxRangeKeyValue,
+			String rangeKeyName,
 			int numRangeSplits) {
 		
 		String minString = minRangeKeyValue.getS();
@@ -98,8 +100,10 @@ public class TextSplitter extends BigDecimalSplitter {
 			splits.add(new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
+					hashKeyName,
 					rangeKeyType,
 					rangeKeyValues,
+					rangeKeyName,
 					ComparisonOperator.BETWEEN));
 
 			start = end + FRIST_PRINTABLE_CHAR;

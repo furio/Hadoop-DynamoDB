@@ -44,9 +44,11 @@ public class BigDecimalSplitter extends AbstractSplitter {
 			List<InputSplit> splits,
 			Types hashKeyType,
 			AttributeValue hashKeyValue,
+			String hashKeyName,
 			Types rangeKeyType,
 			AttributeValue minRangeKeyValue,
 			AttributeValue maxRangeKeyValue,
+			String rangeKeyName,
 			int numRangeSplits) {
 
 		BigDecimal numSplits = BigDecimal.valueOf(numRangeSplits);
@@ -69,8 +71,10 @@ public class BigDecimalSplitter extends AbstractSplitter {
 			splits.add(new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
+					hashKeyName,
 					rangeKeyType,
 					rangeKeyValues,
+					rangeKeyName,
 					ComparisonOperator.BETWEEN));
 
 			// set start to end of last interval plus minimum positive value

@@ -35,9 +35,11 @@ public class DefaultSplitter extends AbstractSplitter {
 			List<InputSplit> splits,
 			Types hashKeyType,
 			AttributeValue hashKeyValue,
+			String hashKeyName,
 			Types rangeKeyType,
 			AttributeValue minRangeKeyValue,
 			AttributeValue maxRangeKeyValue,
+			String rangeKeyName,
 			int numRangeSplits) {
 		
 		LOG.error(String.format("Unable to generate RangeKey splits for RangeKeyType: %s", rangeKeyType));

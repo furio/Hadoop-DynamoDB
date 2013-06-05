@@ -49,9 +49,11 @@ public abstract class AbstractSplitter implements DynamoDBSplitter {
 
 		Types hashKeyType = DynamoDBQueryInputFormat.getHashKeyType(conf);
 		AttributeValue hashKeyValue = DynamoDBQueryInputFormat.getHashKeyValue(conf);
+		String hashKeyName = DynamoDBQueryInputFormat.getHashKeyName(conf);
 
 		Types rangeKeyType = DynamoDBQueryInputFormat.getRangeKeyType(conf);
 		Collection<AttributeValue> rangeKeyValues = DynamoDBQueryInputFormat.getRangeKeyValues(conf);
+		String rangeKeyName = DynamoDBQueryInputFormat.getRangeKeyName(conf);
 		ComparisonOperator rangeKeyoperator = DynamoDBQueryInputFormat.getRangeKeyComparisonOperator(conf);
 		AttributeValue minRangeKeyValue = DynamoDBQueryInputFormat.getRangeKeyInterpolateMinValue(conf);
 		AttributeValue maxRangeKeyValue = DynamoDBQueryInputFormat.getRangeKeyInterpolateMaxValue(conf);
@@ -84,8 +86,10 @@ public abstract class AbstractSplitter implements DynamoDBSplitter {
 			DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split = new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
+					hashKeyName,
 					rangeKeyType,
 					rangeKeyValues,
+					rangeKeyName,
 					rangeKeyoperator);
 
 			splits.add(split);
@@ -103,9 +107,11 @@ public abstract class AbstractSplitter implements DynamoDBSplitter {
 						splits,
 						hashKeyType,
 						hashKeyValue,
+						hashKeyName,
 						rangeKeyType,
 						minRangeKeyValue,
 						maxRangeKeyValue,
+						rangeKeyName,
 						numRangeSplits);
 			}
 		}
@@ -118,9 +124,11 @@ public abstract class AbstractSplitter implements DynamoDBSplitter {
 			List<InputSplit> splits,
 			Types hashKeyType,
 			AttributeValue hashKeyValue,
+			String hashKeyName,
 			Types rangeKeyType,
 			AttributeValue minRangeKeyValue,
 			AttributeValue maxRangeKeyValue,
+			String rangeKeyName,
 			int numRangeSplits);
 
 }

@@ -16,16 +16,11 @@
 
 package com.willetinc.hadoop.mapreduce.dynamodb;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
-import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat.DynamoDBQueryInputSplit;
@@ -45,26 +40,9 @@ public class DynamoDBQueryRecordReader<T extends DynamoDBKeyWritable> extends
 			String table) {
 		super(inputSplit, valueClass, conf, client, dbConf, table);
 		
-		Condition hashKeyCondition = new Condition()
-		.withComparisonOperator(ComparisonOperator.EQ.toString())
-		.withAttributeValueList(inputSplit.getHashKeyValue());
-		
-		Map<String, Condition> keyConditions = new HashMap<String, Condition>();
-		keyConditions.put("Id", hashKeyCondition);
-		
 		queryRequest = new QueryRequest()
 			.withTableName(getTableName())
-			.withKeyConditions(keyConditions);
-		
-		// configure range key if it exists
-		if(inputSplit.hasRangeKey()) {
-			Condition rangeKeyCondition = new Condition()
-				.withComparisonOperator(inputSplit.getRangeKeyOperator())
-				.withAttributeValueList(inputSplit.getRangeKeyValues());
-			keyConditions.put("Id", rangeKeyCondition);
-			queryRequest.setKeyConditions(keyConditions);
-		}
-		
+			.withKeyConditions(inputSplit.getKeyConditions());
 	}
 
 	@Override
