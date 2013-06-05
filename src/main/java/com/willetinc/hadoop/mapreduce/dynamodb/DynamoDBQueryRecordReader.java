@@ -23,7 +23,6 @@ import org.apache.hadoop.conf.Configuration;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat.DynamoDBQueryInputSplit;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public class DynamoDBQueryRecordReader<T extends DynamoDBKeyWritable> extends
@@ -41,8 +40,10 @@ public class DynamoDBQueryRecordReader<T extends DynamoDBKeyWritable> extends
 		super(inputSplit, valueClass, conf, client, dbConf, table);
 		
 		queryRequest = new QueryRequest()
-			.withTableName(getTableName())
-			.withKeyConditions(inputSplit.getKeyConditions());
+				.withTableName(getTableName())
+				.withKeyConditions(inputSplit.getKeyConditions());
+		
+		
 	}
 
 	@Override

@@ -34,10 +34,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBConfiguration;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBRecordReader;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanRecordReader;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanInputFormat.DynamoDBInputSplit;
 
 public class DynamoDBScanRecordReaderTest {
 	
@@ -51,7 +47,7 @@ public class DynamoDBScanRecordReaderTest {
 		DynamoDBConfiguration.setCredentals(conf, ACCESS_KEY, SECRET_KEY);
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(conf);
 
-		DynamoDBInputSplit inputSplit = createStrictMock(DynamoDBInputSplit.class);
+		DynamoDBScanInputSplit inputSplit = createStrictMock(DynamoDBScanInputSplit.class);
 		AmazonDynamoDBClient client = createStrictMock(AmazonDynamoDBClient.class);
 		
 		ScanResult result = createStrictMock(ScanResult.class);
@@ -65,11 +61,15 @@ public class DynamoDBScanRecordReaderTest {
 		list.add(value);
 		
 		// first set of results
+		expect(inputSplit.getTotalSegments()).andReturn(2);
+		expect(inputSplit.getSegment()).andReturn(1);
 		expect(client.scan(anyObject(ScanRequest.class))).andReturn(result);
 		expect(result.getLastEvaluatedKey()).andReturn(lastKey);
 		expect(result.getItems()).andReturn(list);
 		
 		// second set of results
+		expect(inputSplit.getTotalSegments()).andReturn(2);
+		expect(inputSplit.getSegment()).andReturn(1);
 		expect(client.scan(anyObject(ScanRequest.class))).andReturn(result);
 		expect(result.getLastEvaluatedKey()).andReturn(null);
 		expect(result.getItems()).andReturn(list);

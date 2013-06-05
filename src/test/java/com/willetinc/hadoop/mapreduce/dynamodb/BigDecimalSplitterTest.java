@@ -28,9 +28,6 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.junit.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.willetinc.hadoop.mapreduce.dynamodb.BigDecimalSplitter;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
-import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 
 public class BigDecimalSplitterTest {
 
@@ -68,8 +65,8 @@ public class BigDecimalSplitterTest {
 
 		assertEquals(2, inputSplits.size());
 
-		DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split1 =
-				(DynamoDBQueryInputFormat.DynamoDBQueryInputSplit) inputSplits
+		DynamoDBQueryInputSplit split1 =
+				(DynamoDBQueryInputSplit) inputSplits
 						.get(0);
 		Iterator<AttributeValue> itr1 = split1.getRangeKeyValues().iterator();
 
@@ -77,8 +74,8 @@ public class BigDecimalSplitterTest {
 		System.out.println(split1.getRangeKeyOperator());
 		System.out.println(itr1.next());
 
-		DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split2 =
-				(DynamoDBQueryInputFormat.DynamoDBQueryInputSplit) inputSplits
+		DynamoDBQueryInputSplit split2 =
+				(DynamoDBQueryInputSplit) inputSplits
 						.get(1);
 		Iterator<AttributeValue> itr2 = split2.getRangeKeyValues().iterator();
 

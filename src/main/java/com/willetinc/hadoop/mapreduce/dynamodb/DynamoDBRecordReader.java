@@ -36,7 +36,7 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 	
 	private Class<T> valueClass;
 
-	private DynamoDBScanInputFormat.DynamoDBInputSplit split;
+	private DynamoDBInputSplit split;
 
 	private Configuration conf;
 
@@ -57,7 +57,7 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 	private Map<String, AttributeValue> lastKey = null;
 	
 	public DynamoDBRecordReader(
-			DynamoDBScanInputFormat.DynamoDBInputSplit split,
+			DynamoDBInputSplit split,
 			Class<T> valueClass, 
 			Configuration conf,
 			AmazonDynamoDBClient client, 
@@ -148,11 +148,11 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 		this.valueClass = valueClass;
 	}
 
-	protected DynamoDBScanInputFormat.DynamoDBInputSplit getSplit() {
+	protected DynamoDBInputSplit getSplit() {
 		return split;
 	}
 
-	protected void setSplit(DynamoDBScanInputFormat.DynamoDBInputSplit split) {
+	protected void setSplit(DynamoDBInputSplit split) {
 		this.split = split;
 	}
 
@@ -207,5 +207,4 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 	protected void setLastKey(Map<String, AttributeValue> lastKey) {
 		this.lastKey = lastKey;
 	}
-	
 }

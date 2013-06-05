@@ -37,9 +37,6 @@ import org.junit.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBConfiguration;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
-import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 
 public class DynamoDBQueryInputFormatTest {
 
@@ -346,8 +343,8 @@ public class DynamoDBQueryInputFormatTest {
 		String rangeKeyName = "range";
 		ComparisonOperator rangeKeyOpperator = ComparisonOperator.EQ;
 
-		DynamoDBQueryInputFormat.DynamoDBQueryInputSplit inputSplit =
-				new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+		DynamoDBQueryInputSplit inputSplit =
+				new DynamoDBQueryInputSplit(
 						hashKeyType,
 						hashKeyValue,
 						hashKeyName,
@@ -366,8 +363,8 @@ public class DynamoDBQueryInputFormatTest {
 		// read values back in from byte array
 		ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
 		DataInputStream in = new DataInputStream(bin);
-		DynamoDBQueryInputFormat.DynamoDBQueryInputSplit readSplit =
-				new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit();
+		DynamoDBQueryInputSplit readSplit =
+				new DynamoDBQueryInputSplit();
 		readSplit.readFields(in);
 
 		// verify loaded values

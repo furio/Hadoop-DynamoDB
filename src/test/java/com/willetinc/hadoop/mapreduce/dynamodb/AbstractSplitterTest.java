@@ -33,11 +33,6 @@ import org.junit.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
-import com.willetinc.hadoop.mapreduce.dynamodb.AbstractSplitter;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBSplitter;
-import com.willetinc.hadoop.mapreduce.dynamodb.Types;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat.DynamoDBQueryInputSplit;
 
 public class AbstractSplitterTest {
 
@@ -179,8 +174,8 @@ public class AbstractSplitterTest {
 				rangeKeyValues.add(inMinRangeKeyValue);
 				rangeKeyValues.add(inMaxRangeKeyValue);
 				
-				DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split =
-						new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+				DynamoDBQueryInputSplit split =
+						new DynamoDBQueryInputSplit(
 								hashKeyType,
 								hashKeyValue,
 								hashKeyName,

@@ -120,7 +120,7 @@ public class BinarySplitter extends BigDecimalSplitter {
 			rangeKeyValues
 					.add(new AttributeValue().withB(ByteBuffer.wrap(end)));
 
-			splits.add(new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+			splits.add(new DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
 					hashKeyName,

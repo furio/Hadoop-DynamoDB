@@ -68,7 +68,7 @@ public class BigDecimalSplitter extends AbstractSplitter {
 			rangeKeyValues.add(new AttributeValue().withN(start.toString()));
 			rangeKeyValues.add(new AttributeValue().withN(end.toString()));
 
-			splits.add(new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+			splits.add(new DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
 					hashKeyName,

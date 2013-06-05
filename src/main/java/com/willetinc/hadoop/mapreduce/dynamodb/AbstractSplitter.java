@@ -83,7 +83,7 @@ public abstract class AbstractSplitter implements DynamoDBSplitter {
 				|| maxRangeKeyValue == null) {
 			LOG.info("Generating 1 split for each HashKey");
 
-			DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split = new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+			DynamoDBQueryInputSplit split = new DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
 					hashKeyName,

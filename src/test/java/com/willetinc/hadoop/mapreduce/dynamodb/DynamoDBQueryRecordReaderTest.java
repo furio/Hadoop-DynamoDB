@@ -36,10 +36,6 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBConfiguration;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryRecordReader;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBRecordReader;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat.DynamoDBQueryInputSplit;
 
 public class DynamoDBQueryRecordReaderTest {
 	
@@ -54,9 +50,14 @@ public class DynamoDBQueryRecordReaderTest {
 		DynamoDBConfiguration.setCredentals(conf, ACCESS_KEY, SECRET_KEY);
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(conf);
 		
-		DynamoDBQueryInputSplit inputSplit = createStrictMock(DynamoDBQueryInputSplit.class);
+		
+		
 		AmazonDynamoDBClient client = createStrictMock(AmazonDynamoDBClient.class);
 		AttributeValue hashKeyValue = new AttributeValue().withN("007");
+		DynamoDBQueryInputSplit inputSplit = createMockBuilder(DynamoDBQueryInputSplit.class)
+				.addMockedMethod("getHashKeyValue")
+				.addMockedMethod("hasRangeKey")
+				.createStrictMock();
 		
 		// the important thing we are testing here is that the range key condition
 		// is not specified when the rangeKeyValues collection is empty
@@ -85,7 +86,13 @@ public class DynamoDBQueryRecordReaderTest {
 		DynamoDBConfiguration.setCredentals(conf, ACCESS_KEY, SECRET_KEY);
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(conf);
 		
-		DynamoDBQueryInputSplit inputSplit = createStrictMock(DynamoDBQueryInputSplit.class);
+		DynamoDBQueryInputSplit inputSplit = createMockBuilder(DynamoDBQueryInputSplit.class)
+				.addMockedMethod("getHashKeyValue")
+				.addMockedMethod("hasRangeKey")
+				.addMockedMethod("getRangeKeyOperator")
+				.addMockedMethod("getRangeKeyValues")
+				.createStrictMock();
+		
 		AmazonDynamoDBClient client = createStrictMock(AmazonDynamoDBClient.class);
 		
 		AttributeValue hashKeyValue = new AttributeValue().withN("007");
@@ -123,7 +130,9 @@ public class DynamoDBQueryRecordReaderTest {
 
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(conf);
 
-		DynamoDBQueryInputSplit inputSplit = createStrictMock(DynamoDBQueryInputSplit.class);
+		DynamoDBQueryInputSplit inputSplit = createMockBuilder(DynamoDBQueryInputSplit.class)
+				.addMockedMethod("getHashKeyValue")
+				.addMockedMethod("hasRangeKey").createStrictMock();
 		AttributeValue hashKeyValue = new AttributeValue().withN("007");
 		AmazonDynamoDBClient client = createStrictMock(AmazonDynamoDBClient.class);
 		

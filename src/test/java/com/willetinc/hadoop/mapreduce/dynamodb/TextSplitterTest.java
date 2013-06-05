@@ -28,9 +28,6 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.junit.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
-import com.willetinc.hadoop.mapreduce.dynamodb.TextSplitter;
-import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 
 public class TextSplitterTest {
 
@@ -70,7 +67,7 @@ public class TextSplitterTest {
 
 		
 		for (InputSplit inputSplit: inputSplits) {
-			DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split = (DynamoDBQueryInputFormat.DynamoDBQueryInputSplit) inputSplit;
+			DynamoDBQueryInputSplit split = (DynamoDBQueryInputSplit) inputSplit;
 			Iterator<AttributeValue> itr = split.getRangeKeyValues().iterator();
 
 			System.out.print(split.getRangeKeyOperator() + " ");

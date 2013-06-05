@@ -97,7 +97,7 @@ public class TextSplitter extends BigDecimalSplitter {
 			rangeKeyValues.add(new AttributeValue().withS(start));
 			rangeKeyValues.add(new AttributeValue().withS(end));
 
-			splits.add(new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+			splits.add(new DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
 					hashKeyName,
