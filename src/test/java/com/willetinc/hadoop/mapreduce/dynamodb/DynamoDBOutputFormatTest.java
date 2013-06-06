@@ -31,8 +31,8 @@ import org.junit.Test;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
+import com.amazonaws.services.dynamodbv2.model.BatchWriteItemRequest;
+import com.amazonaws.services.dynamodbv2.model.BatchWriteItemResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBItemWritable;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.NWritable;
 
@@ -74,9 +74,9 @@ public class DynamoDBOutputFormatTest {
 				client,
 				TABLE_NAME);
 
-		Capture<PutItemRequest> putCapture = new Capture<PutItemRequest>();
-		expect(client.putItem(capture(putCapture))).andReturn(
-				new PutItemResult());
+		Capture<BatchWriteItemRequest> putCapture = new Capture<BatchWriteItemRequest>();
+		expect(client.batchWriteItem(capture(putCapture)))
+				.andReturn(new BatchWriteItemResult());
 		client.shutdown();
 
 		AttributeValue hashKey = new AttributeValue().withN(HASHKEY_VALUE);
@@ -91,8 +91,8 @@ public class DynamoDBOutputFormatTest {
 
 		writer.write(record, NullWritable.get());
 		writer.close(context);
-		PutItemRequest put = putCapture.getValue();
-		Map<String, AttributeValue> item = put.getItem();
+		BatchWriteItemRequest put = putCapture.getValue();
+		Map<String, AttributeValue> item = put.getRequestItems().get(TABLE_NAME).get(0).getPutRequest().getItem();
 
 		assertEquals(2, item.size());
 		assertEquals(hashKey, item.get(HASHKEY_FIELD));
