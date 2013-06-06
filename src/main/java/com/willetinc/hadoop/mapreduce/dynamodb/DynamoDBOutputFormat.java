@@ -133,8 +133,8 @@ public class DynamoDBOutputFormat<K extends DynamoDBKeyWritable, V> extends
 		private void writeOnFailed(List<WriteRequest> list) {
 			for (WriteRequest request : list) {
 				PutItemRequest putItemRequest = new PutItemRequest()
-						.withTableName(tableName).withItem(
-								request.getPutRequest().getItem());
+						.withTableName(tableName)
+						.withItem(request.getPutRequest().getItem());
 				client.putItem(putItemRequest);
 			}
 		}

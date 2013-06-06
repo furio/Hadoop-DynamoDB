@@ -29,10 +29,13 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.easymock.Capture;
 import org.junit.Test;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.BatchWriteItemRequest;
 import com.amazonaws.services.dynamodbv2.model.BatchWriteItemResult;
+import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBItemWritable;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.NWritable;
 
@@ -57,6 +60,40 @@ public class DynamoDBOutputFormatTest {
 			}, new NWritable(RANGEKEY_FIELD) {
 			});
 		}
+	}
+	
+	@Test
+	public void testDynamoDBRecordWriterSizeTooBig() throws IOException, InterruptedException {
+		
+		AttributeValue rangeKey = new AttributeValue().withN(RANGEKEY_VALUE);
+		
+		AmazonDynamoDBClient client = createMock(AmazonDynamoDBClient.class);
+		TaskAttemptContext context = createMock(TaskAttemptContext.class);
+		DynamoDBOutputFormat<MyTable, NullWritable> outputFormat = new DynamoDBOutputFormat<MyTable, NullWritable>();
+
+		RecordWriter<MyTable, NullWritable> writer = outputFormat.getRecordWriter(
+				client,
+				TABLE_NAME);
+		
+		expect(client.batchWriteItem(anyObject(BatchWriteItemRequest.class))).andThrow(new AmazonClientException(null));
+		expect(client.putItem(anyObject(PutItemRequest.class))).andReturn(new PutItemResult());
+		expect(client.putItem(anyObject(PutItemRequest.class))).andReturn(new PutItemResult());
+		client.shutdown();
+		
+		replay(client);
+		replay(context);
+		
+		for(int i = 0; i < 2; i++) {
+			MyTable record = new MyTable();
+			record.setHashKeyValue(new AttributeValue().withN(Integer.toString(i)));
+			record.setRangeKeyValue(rangeKey);
+			writer.write(record, NullWritable.get());
+		}
+		
+		writer.close(context);
+
+		verify(client);
+		verify(context);
 	}
 
 	@Test
