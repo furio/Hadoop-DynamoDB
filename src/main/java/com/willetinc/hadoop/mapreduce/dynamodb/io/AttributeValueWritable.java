@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.willetinc.hadoop.mapreduce.dynamodb.AttributeValueIOUtils;
 import com.willetinc.hadoop.mapreduce.dynamodb.Types;
 

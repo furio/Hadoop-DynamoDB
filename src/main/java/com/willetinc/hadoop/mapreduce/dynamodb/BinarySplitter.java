@@ -31,8 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.InputSplit;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 
 /**
  * This method needs to determine the splits between two user-provided byte
@@ -64,9 +64,11 @@ public class BinarySplitter extends BigDecimalSplitter {
 			List<InputSplit> splits,
 			Types hashKeyType,
 			AttributeValue hashKeyValue,
+			String hashKeyName,
 			Types rangeKeyType,
 			AttributeValue minRangeKeyValue,
 			AttributeValue maxRangeKeyValue,
+			String rangeKeyName,
 			int numRangeSplits) {
 
 		byte[] minBytes = minRangeKeyValue.getB().array();
@@ -118,11 +120,13 @@ public class BinarySplitter extends BigDecimalSplitter {
 			rangeKeyValues
 					.add(new AttributeValue().withB(ByteBuffer.wrap(end)));
 
-			splits.add(new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+			splits.add(new DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
+					hashKeyName,
 					rangeKeyType,
 					rangeKeyValues,
+					rangeKeyName,
 					ComparisonOperator.BETWEEN));
 
 			start = ArrayUtils.addAll(end, new byte[] { 0x0 });

@@ -27,9 +27,8 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.util.ReflectionUtils;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.Key;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
@@ -37,7 +36,7 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 	
 	private Class<T> valueClass;
 
-	private DynamoDBScanInputFormat.DynamoDBInputSplit split;
+	private DynamoDBInputSplit split;
 
 	private Configuration conf;
 
@@ -55,10 +54,10 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 	
 	private Iterator<Map<String, AttributeValue>> iterator;
 	
-	private Key lastKey = null;
+	private Map<String, AttributeValue> lastKey = null;
 	
 	public DynamoDBRecordReader(
-			DynamoDBScanInputFormat.DynamoDBInputSplit split,
+			DynamoDBInputSplit split,
 			Class<T> valueClass, 
 			Configuration conf,
 			AmazonDynamoDBClient client, 
@@ -149,11 +148,11 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 		this.valueClass = valueClass;
 	}
 
-	protected DynamoDBScanInputFormat.DynamoDBInputSplit getSplit() {
+	protected DynamoDBInputSplit getSplit() {
 		return split;
 	}
 
-	protected void setSplit(DynamoDBScanInputFormat.DynamoDBInputSplit split) {
+	protected void setSplit(DynamoDBInputSplit split) {
 		this.split = split;
 	}
 
@@ -201,12 +200,11 @@ public abstract class DynamoDBRecordReader<T extends DynamoDBKeyWritable>
 		this.iterator = iterator;
 	}
 
-	protected Key getLastKey() {
+	protected Map<String, AttributeValue> getLastKey() {
 		return lastKey;
 	}
 
-	protected void setLastKey(Key lastKey) {
+	protected void setLastKey(Map<String, AttributeValue> lastKey) {
 		this.lastKey = lastKey;
 	}
-	
 }

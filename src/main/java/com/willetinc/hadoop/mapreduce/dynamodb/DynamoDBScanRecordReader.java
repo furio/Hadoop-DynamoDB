@@ -20,10 +20,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.ScanRequest;
-import com.amazonaws.services.dynamodb.model.ScanResult;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanInputFormat.DynamoDBInputSplit;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public class DynamoDBScanRecordReader<T extends DynamoDBKeyWritable> extends DynamoDBRecordReader<T> {
@@ -31,7 +30,7 @@ public class DynamoDBScanRecordReader<T extends DynamoDBKeyWritable> extends Dyn
 	private static final Log LOG = LogFactory.getLog(DynamoDBScanRecordReader.class);
 	
 	public DynamoDBScanRecordReader(
-			DynamoDBInputSplit split,
+			DynamoDBScanInputSplit split,
 			Class<T> valueClass, 
 			Configuration conf,
 			AmazonDynamoDBClient client, 
@@ -45,7 +44,10 @@ public class DynamoDBScanRecordReader<T extends DynamoDBKeyWritable> extends Dyn
 		if (LOG.isDebugEnabled())
 			LOG.debug(String.format("Scaning of table: %s from ExclusiveStartKey: %s", getTableName(), getLastKey()));
 		
-		ScanRequest scanRequest = new ScanRequest().withTableName(getTableName());
+		ScanRequest scanRequest = new ScanRequest().withTableName(getTableName())
+				.withTotalSegments(((DynamoDBScanInputSplit)getSplit()).getTotalSegments())
+				.withSegment(((DynamoDBScanInputSplit)getSplit()).getSegment());
+		
 		if(getLastKey() != null) {
 			scanRequest.setExclusiveStartKey(getLastKey());
 		}

@@ -23,8 +23,8 @@ import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.InputSplit;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 
 /**
  * This method needs to determine the splits between two user-provided strings.
@@ -53,9 +53,11 @@ public class TextSplitter extends BigDecimalSplitter {
 			List<InputSplit> splits,
 			Types hashKeyType,
 			AttributeValue hashKeyValue,
+			String hashKeyName,
 			Types rangeKeyType,
 			AttributeValue minRangeKeyValue,
 			AttributeValue maxRangeKeyValue,
+			String rangeKeyName,
 			int numRangeSplits) {
 		
 		String minString = minRangeKeyValue.getS();
@@ -95,11 +97,13 @@ public class TextSplitter extends BigDecimalSplitter {
 			rangeKeyValues.add(new AttributeValue().withS(start));
 			rangeKeyValues.add(new AttributeValue().withS(end));
 
-			splits.add(new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+			splits.add(new DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
+					hashKeyName,
 					rangeKeyType,
 					rangeKeyValues,
+					rangeKeyName,
 					ComparisonOperator.BETWEEN));
 
 			start = end + FRIST_PRINTABLE_CHAR;

@@ -26,8 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.InputSplit;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 
 /**
  * <p>
@@ -49,9 +49,11 @@ public abstract class AbstractSplitter implements DynamoDBSplitter {
 
 		Types hashKeyType = DynamoDBQueryInputFormat.getHashKeyType(conf);
 		AttributeValue hashKeyValue = DynamoDBQueryInputFormat.getHashKeyValue(conf);
+		String hashKeyName = DynamoDBQueryInputFormat.getHashKeyName(conf);
 
 		Types rangeKeyType = DynamoDBQueryInputFormat.getRangeKeyType(conf);
 		Collection<AttributeValue> rangeKeyValues = DynamoDBQueryInputFormat.getRangeKeyValues(conf);
+		String rangeKeyName = DynamoDBQueryInputFormat.getRangeKeyName(conf);
 		ComparisonOperator rangeKeyoperator = DynamoDBQueryInputFormat.getRangeKeyComparisonOperator(conf);
 		AttributeValue minRangeKeyValue = DynamoDBQueryInputFormat.getRangeKeyInterpolateMinValue(conf);
 		AttributeValue maxRangeKeyValue = DynamoDBQueryInputFormat.getRangeKeyInterpolateMaxValue(conf);
@@ -81,11 +83,13 @@ public abstract class AbstractSplitter implements DynamoDBSplitter {
 				|| maxRangeKeyValue == null) {
 			LOG.info("Generating 1 split for each HashKey");
 
-			DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split = new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+			DynamoDBQueryInputSplit split = new DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
+					hashKeyName,
 					rangeKeyType,
 					rangeKeyValues,
+					rangeKeyName,
 					rangeKeyoperator);
 
 			splits.add(split);
@@ -103,9 +107,11 @@ public abstract class AbstractSplitter implements DynamoDBSplitter {
 						splits,
 						hashKeyType,
 						hashKeyValue,
+						hashKeyName,
 						rangeKeyType,
 						minRangeKeyValue,
 						maxRangeKeyValue,
+						rangeKeyName,
 						numRangeSplits);
 			}
 		}
@@ -118,9 +124,11 @@ public abstract class AbstractSplitter implements DynamoDBSplitter {
 			List<InputSplit> splits,
 			Types hashKeyType,
 			AttributeValue hashKeyValue,
+			String hashKeyName,
 			Types rangeKeyType,
 			AttributeValue minRangeKeyValue,
 			AttributeValue maxRangeKeyValue,
+			String rangeKeyName,
 			int numRangeSplits);
 
 }

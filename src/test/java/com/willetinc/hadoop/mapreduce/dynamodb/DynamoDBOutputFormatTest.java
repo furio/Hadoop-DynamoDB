@@ -29,10 +29,13 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.easymock.Capture;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.PutItemRequest;
-import com.amazonaws.services.dynamodb.model.PutItemResult;
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.BatchWriteItemRequest;
+import com.amazonaws.services.dynamodbv2.model.BatchWriteItemResult;
+import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBItemWritable;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.NWritable;
 
@@ -58,6 +61,40 @@ public class DynamoDBOutputFormatTest {
 			});
 		}
 	}
+	
+	@Test
+	public void testDynamoDBRecordWriterSizeTooBig() throws IOException, InterruptedException {
+		
+		AttributeValue rangeKey = new AttributeValue().withN(RANGEKEY_VALUE);
+		
+		AmazonDynamoDBClient client = createMock(AmazonDynamoDBClient.class);
+		TaskAttemptContext context = createMock(TaskAttemptContext.class);
+		DynamoDBOutputFormat<MyTable, NullWritable> outputFormat = new DynamoDBOutputFormat<MyTable, NullWritable>();
+
+		RecordWriter<MyTable, NullWritable> writer = outputFormat.getRecordWriter(
+				client,
+				TABLE_NAME);
+		
+		expect(client.batchWriteItem(anyObject(BatchWriteItemRequest.class))).andThrow(new AmazonClientException(null));
+		expect(client.putItem(anyObject(PutItemRequest.class))).andReturn(new PutItemResult());
+		expect(client.putItem(anyObject(PutItemRequest.class))).andReturn(new PutItemResult());
+		client.shutdown();
+		
+		replay(client);
+		replay(context);
+		
+		for(int i = 0; i < 2; i++) {
+			MyTable record = new MyTable();
+			record.setHashKeyValue(new AttributeValue().withN(Integer.toString(i)));
+			record.setRangeKeyValue(rangeKey);
+			writer.write(record, NullWritable.get());
+		}
+		
+		writer.close(context);
+
+		verify(client);
+		verify(context);
+	}
 
 	@Test
 	public void testDynamoDBRecordWriter()
@@ -74,9 +111,9 @@ public class DynamoDBOutputFormatTest {
 				client,
 				TABLE_NAME);
 
-		Capture<PutItemRequest> putCapture = new Capture<PutItemRequest>();
-		expect(client.putItem(capture(putCapture))).andReturn(
-				new PutItemResult());
+		Capture<BatchWriteItemRequest> putCapture = new Capture<BatchWriteItemRequest>();
+		expect(client.batchWriteItem(capture(putCapture)))
+				.andReturn(new BatchWriteItemResult());
 		client.shutdown();
 
 		AttributeValue hashKey = new AttributeValue().withN(HASHKEY_VALUE);
@@ -91,8 +128,8 @@ public class DynamoDBOutputFormatTest {
 
 		writer.write(record, NullWritable.get());
 		writer.close(context);
-		PutItemRequest put = putCapture.getValue();
-		Map<String, AttributeValue> item = put.getItem();
+		BatchWriteItemRequest put = putCapture.getValue();
+		Map<String, AttributeValue> item = put.getRequestItems().get(TABLE_NAME).get(0).getPutRequest().getItem();
 
 		assertEquals(2, item.size());
 		assertEquals(hashKey, item.get(HASHKEY_FIELD));

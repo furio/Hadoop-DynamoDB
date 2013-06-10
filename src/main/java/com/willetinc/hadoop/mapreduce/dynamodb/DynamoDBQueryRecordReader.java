@@ -20,11 +20,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.Condition;
-import com.amazonaws.services.dynamodb.model.QueryRequest;
-import com.amazonaws.services.dynamodb.model.QueryResult;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat.DynamoDBQueryInputSplit;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public class DynamoDBQueryRecordReader<T extends DynamoDBKeyWritable> extends
@@ -42,16 +40,9 @@ public class DynamoDBQueryRecordReader<T extends DynamoDBKeyWritable> extends
 		super(inputSplit, valueClass, conf, client, dbConf, table);
 		
 		queryRequest = new QueryRequest()
-			.withTableName(getTableName())
-			.withHashKeyValue(inputSplit.getHashKeyValue());
+				.withTableName(getTableName())
+				.withKeyConditions(inputSplit.getKeyConditions());
 		
-		// configure range key if it exists
-		if(inputSplit.hasRangeKey()) {
-			Condition condition = new Condition()
-				.withComparisonOperator(inputSplit.getRangeKeyOperator())
-				.withAttributeValueList(inputSplit.getRangeKeyValues());
-			queryRequest.setRangeKeyCondition(condition);
-		}
 		
 	}
 

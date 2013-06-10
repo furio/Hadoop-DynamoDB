@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
@@ -34,7 +33,7 @@ import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.AttributeValueWritable;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
@@ -93,35 +92,6 @@ public class DynamoDBScanInputFormat<T extends DynamoDBKeyWritable> extends
 		}
 	}
 
-	public static class DynamoDBInputSplit extends InputSplit implements
-			Writable {
-
-		/**
-		 * Default Constructor
-		 */
-		public DynamoDBInputSplit() {
-		}
-
-		public void readFields(DataInput in) throws IOException {
-
-		}
-
-		public void write(DataOutput out) throws IOException {
-
-		}
-
-		@Override
-		public long getLength() throws IOException, InterruptedException {
-			return 0;
-		}
-
-		@Override
-		public String[] getLocations() throws IOException, InterruptedException {
-			return new String[] {};
-		}
-
-	}
-
 	public static void setCredentials(
 			Job job,
 			String accessKey,
@@ -174,7 +144,7 @@ public class DynamoDBScanInputFormat<T extends DynamoDBKeyWritable> extends
 		@SuppressWarnings("unchecked")
 		Class<T> inputClass = (Class<T>) (dbConf.getInputClass());
 		return new DynamoDBScanRecordReader<T>(
-				(DynamoDBInputSplit) inputSplit,
+				(DynamoDBScanInputSplit) inputSplit,
 				inputClass,
 				context.getConfiguration(),
 				dbConf.getAmazonDynamoDBClient(),
@@ -194,11 +164,15 @@ public class DynamoDBScanInputFormat<T extends DynamoDBKeyWritable> extends
 	}
 
 	@Override
-	public List<InputSplit> getSplits(JobContext context)
+	public List<InputSplit> getSplits(JobContext job)
 			throws IOException,
 			InterruptedException {
+		Configuration conf = job.getConfiguration();
+		int numSplits = conf.getInt("mapred.map.tasks", 1);
 		List<InputSplit> splits = new ArrayList<InputSplit>();
-		splits.add(new DynamoDBInputSplit());
+		for(int i = 0; i < numSplits; i++) {
+			splits.add(new DynamoDBScanInputSplit(numSplits, i));
+		}
 		return splits;
 	}
 

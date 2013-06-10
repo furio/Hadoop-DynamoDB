@@ -29,10 +29,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.willetinc.hadoop.mapreduce.dynamodb.BinarySplitter;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
-import com.willetinc.hadoop.mapreduce.dynamodb.Types;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 public class BinarySplitterTest {
 
@@ -43,11 +40,13 @@ public class BinarySplitterTest {
 		final String VALUE = "007";
 		final Types hashKeyType = Types.NUMBER;
 		final AttributeValue hashKeyValue = new AttributeValue().withN(VALUE);
+		final String hashKeyName = "Id";
 		final Types rangeKeyType = Types.STRING;
 		final AttributeValue minRangeKeyValue =
 				new AttributeValue().withB(ByteBuffer.wrap(new byte[] {0x0, 0x0}));
 		final AttributeValue maxRangeKeyValue =
 				new AttributeValue().withB(ByteBuffer.wrap(new byte[] {0x0, 0xF}));
+		final String rangeKeyName = "range";
 
 		Configuration conf = createMock(Configuration.class);
 		BinarySplitter splitter = new BinarySplitter();
@@ -59,16 +58,18 @@ public class BinarySplitterTest {
 				inputSplits,
 				hashKeyType,
 				hashKeyValue,
+				hashKeyName,
 				rangeKeyType,
 				minRangeKeyValue,
 				maxRangeKeyValue,
+				rangeKeyName,
 				NUM_RANGE_SPLITS);
 
 		assertEquals(2, inputSplits.size());
 
 		
 		for (InputSplit inputSplit: inputSplits) {
-			DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split = (DynamoDBQueryInputFormat.DynamoDBQueryInputSplit) inputSplit;
+			DynamoDBQueryInputSplit split = (DynamoDBQueryInputSplit) inputSplit;
 			Iterator<AttributeValue> itr = split.getRangeKeyValues().iterator();
 
 			System.out.print(split.getRangeKeyOperator() + " ");

@@ -27,10 +27,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.willetinc.hadoop.mapreduce.dynamodb.BigDecimalSplitter;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
-import com.willetinc.hadoop.mapreduce.dynamodb.Types;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 public class BigDecimalSplitterTest {
 
@@ -41,11 +38,13 @@ public class BigDecimalSplitterTest {
 		final String VALUE = "007";
 		final Types hashKeyType = Types.NUMBER;
 		final AttributeValue hashKeyValue = new AttributeValue().withN(VALUE);
+		final String hashKeyName = "Id";
 		final Types rangeKeyType = Types.NUMBER;
 		final AttributeValue minRangeKeyValue =
 				new AttributeValue().withN("0.0");
 		final AttributeValue maxRangeKeyValue =
 				new AttributeValue().withN("100.0");
+		final String rangeKeyName = "range";
 
 		Configuration conf = createMock(Configuration.class);
 		BigDecimalSplitter splitter = new BigDecimalSplitter();
@@ -57,15 +56,17 @@ public class BigDecimalSplitterTest {
 				inputSplits,
 				hashKeyType,
 				hashKeyValue,
+				hashKeyName,
 				rangeKeyType,
 				minRangeKeyValue,
 				maxRangeKeyValue,
+				rangeKeyName,
 				NUM_RANGE_SPLITS);
 
 		assertEquals(2, inputSplits.size());
 
-		DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split1 =
-				(DynamoDBQueryInputFormat.DynamoDBQueryInputSplit) inputSplits
+		DynamoDBQueryInputSplit split1 =
+				(DynamoDBQueryInputSplit) inputSplits
 						.get(0);
 		Iterator<AttributeValue> itr1 = split1.getRangeKeyValues().iterator();
 
@@ -73,8 +74,8 @@ public class BigDecimalSplitterTest {
 		System.out.println(split1.getRangeKeyOperator());
 		System.out.println(itr1.next());
 
-		DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split2 =
-				(DynamoDBQueryInputFormat.DynamoDBQueryInputSplit) inputSplits
+		DynamoDBQueryInputSplit split2 =
+				(DynamoDBQueryInputSplit) inputSplits
 						.get(1);
 		Iterator<AttributeValue> itr2 = split2.getRangeKeyValues().iterator();
 

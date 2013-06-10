@@ -20,7 +20,7 @@ import org.apache.hadoop.conf.Configuration;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanInputFormat.NullDynamoDBWritable;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
@@ -32,7 +32,7 @@ public class DynamoDBConfiguration {
 	
 	public final static String DYNAMODB_ENDPOINT = "mapreduce.dynamodb.endpoint";
 
-	public final static String INPUT_TABLE_NAME_PROPERTY = "mapreduce.dynamodb.input.talble.name";
+	public final static String INPUT_TABLE_NAME_PROPERTY = "mapreduce.dynamodb.input.table.name";
 
 	public static final String INPUT_CLASS_PROPERTY = "mapreduce.dynamodb.input.class";
 
@@ -42,9 +42,13 @@ public class DynamoDBConfiguration {
 	
 	public static final String HASH_KEY_VALUE_PROPERTY = "mapreduce.dynamodb.query.hashkey.value";
 	
+	public static final String HASH_KEY_NAME_PROPERTY = "mapreduce.dynamodb.query.hashkey.name";
+	
 	public static final String RANGE_KEY_TYPE_PROPERTY = "mapreduce.dynamodb.query.rangekey.type";
 	
 	public static final String RANGE_KEY_VALUES_PROPERTY = "mapreduce.dynamodb.query.rangekey.values";
+	
+	public static final String RANGE_KEY_NAME_PROPERTY = "mapreduce.dynamodb.query.rangekey.name";
 	
 	public static final String RANGE_KEY_OPERATOR_PROPERTY = "mapreduce.dynamodb.query.rangekey.operator";
 

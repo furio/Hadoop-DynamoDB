@@ -17,7 +17,9 @@
 package com.willetinc.hadoop.mapreduce.dynamodb;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter;
@@ -28,30 +30,27 @@ import org.apache.hadoop.mapreduce.OutputFormat;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.PutItemRequest;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.BatchWriteItemRequest;
+import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.amazonaws.services.dynamodbv2.model.PutRequest;
+import com.amazonaws.services.dynamodbv2.model.WriteRequest;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
-/**
- * 
- */
 public class DynamoDBOutputFormat<K extends DynamoDBKeyWritable, V> extends
 		OutputFormat<K, V> {
 
 	@Override
-	public void checkOutputSpecs(JobContext context)
-			throws IOException,
+	public void checkOutputSpecs(JobContext context) throws IOException,
 			InterruptedException {
 
 	}
 
 	@Override
 	public OutputCommitter getOutputCommitter(TaskAttemptContext context)
-			throws IOException,
-			InterruptedException {
-		return new FileOutputCommitter(
-				FileOutputFormat.getOutputPath(context),
+			throws IOException, InterruptedException {
+		return new FileOutputCommitter(FileOutputFormat.getOutputPath(context),
 				context);
 	}
 
@@ -61,55 +60,93 @@ public class DynamoDBOutputFormat<K extends DynamoDBKeyWritable, V> extends
 
 		private String tableName;
 
+		private final int MAX_NUMBER_OF_ITEMS = 25;
+
+		private List<WriteRequest> writeRequests;
+
 		public DynamoDBRecordWriter() {
 		};
 
-		public DynamoDBRecordWriter(AmazonDynamoDBClient client,
+		public DynamoDBRecordWriter(
+				AmazonDynamoDBClient client,
 				String tableName) {
 			this.client = client;
 			this.tableName = tableName;
+			writeRequests = new ArrayList<WriteRequest>();
 		}
 
 		@Override
-		public void close(TaskAttemptContext context)
-				throws IOException,
+		public void close(TaskAttemptContext context) throws IOException,
 				InterruptedException {
-			if (null != client) {
+
+			if(writeRequests.size() > 0) {
+				try {
+					Map<String, List<WriteRequest>> items = new HashMap<String, List<WriteRequest>>();
+					items.put(tableName, writeRequests);
+					BatchWriteItemRequest batchItem = new BatchWriteItemRequest()
+							.withRequestItems(items);
+					client.batchWriteItem(batchItem);
+				} catch (Exception e) {
+					writeOnFailed(writeRequests);
+				}
+			}
+
+			if(null != client) {
 				client.shutdown();
 			}
 		}
-		
+
 		public AmazonDynamoDBClient getClient() {
 			return client;
 		}
-		
+
 		public String getTableName() {
 			return tableName;
 		}
 
 		@Override
-		public void write(K key, V value)
-				throws IOException,
+		public void write(K key, V value) throws IOException,
 				InterruptedException {
+
 			Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
 			key.write(item);
 
-			PutItemRequest putItemRequest = new PutItemRequest().withTableName(
-					tableName).withItem(item);
+			PutRequest putRequest = new PutRequest().withItem(item);
+			WriteRequest writeRequest = new WriteRequest()
+					.withPutRequest(putRequest);
+			writeRequests.add(writeRequest);
 
-			client.putItem(putItemRequest);
+			if(writeRequests.size() == MAX_NUMBER_OF_ITEMS) {
+				try {
+					Map<String, List<WriteRequest>> items = new HashMap<String, List<WriteRequest>>();
+					items.put(tableName, writeRequests);
+					BatchWriteItemRequest batchItem = new BatchWriteItemRequest()
+							.withRequestItems(items);
+					client.batchWriteItem(batchItem);
+				} catch (Exception e) {
+					writeOnFailed(writeRequests);
+				}
+				writeRequests = new ArrayList<WriteRequest>();
+			}
+		}
+
+		private void writeOnFailed(List<WriteRequest> list) {
+			for (WriteRequest request : list) {
+				PutItemRequest putItemRequest = new PutItemRequest()
+						.withTableName(tableName)
+						.withItem(request.getPutRequest().getItem());
+				client.putItem(putItemRequest);
+			}
 		}
 
 	}
-	
+
 	@Override
 	public RecordWriter<K, V> getRecordWriter(TaskAttemptContext context)
-			throws IOException,
-			InterruptedException {
+			throws IOException, InterruptedException {
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(
 				context.getConfiguration());
-		return new DynamoDBRecordWriter(
-				dbConf.getAmazonDynamoDBClient(),
+		return new DynamoDBRecordWriter(dbConf.getAmazonDynamoDBClient(),
 				dbConf.getOutputTableName());
 	}
 
@@ -117,15 +154,11 @@ public class DynamoDBOutputFormat<K extends DynamoDBKeyWritable, V> extends
 	 * Method used for unit testing DynamoDBRecordWriter. Should not be called
 	 * otherwise.
 	 * 
-	 * @param client
-	 *            Configured AmazonDynamoDBClient.
-	 * @param tableName
-	 *            DynamoDb table name
+	 * @param client Configured AmazonDynamoDBClient.
+	 * @param tableName DynamoDb table name
 	 * @return Configured DynamoDBRecordWriter instance
 	 */
-	RecordWriter<K, V> getRecordWriter(
-			AmazonDynamoDBClient client,
-			String tableName) {
+	RecordWriter<K, V> getRecordWriter(AmazonDynamoDBClient client, String tableName) {
 		return new DynamoDBRecordWriter(client, tableName);
 	}
 

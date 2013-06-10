@@ -35,11 +35,8 @@ import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBConfiguration;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
-import com.willetinc.hadoop.mapreduce.dynamodb.Types;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 
 public class DynamoDBQueryInputFormatTest {
 
@@ -115,6 +112,39 @@ public class DynamoDBQueryInputFormatTest {
 				.getS());
 		assertNull(DynamoDBQueryInputFormat.getHashKeyValue(conf));
 
+		verify(conf);
+	}
+	
+	@Test
+	public void testSetHashKeyName() {
+		Configuration conf = createMock(Configuration.class);
+		String name = "Id";
+		
+		conf.set(DynamoDBConfiguration.HASH_KEY_NAME_PROPERTY, name);
+		
+		replay(conf);
+		
+		DynamoDBQueryInputFormat.setHashKeyName(conf, name);
+		
+		verify(conf);
+	}
+	
+	@Test
+	public void testGetHashKeyName() {
+		Configuration conf = createMock(Configuration.class);
+		String name = "Id";
+		
+		expect(conf.get(DynamoDBConfiguration.HASH_KEY_NAME_PROPERTY))
+			.andReturn(name);
+		
+		expect(conf.get(DynamoDBConfiguration.HASH_KEY_NAME_PROPERTY))
+			.andReturn(null);
+		
+		replay(conf);
+		
+		assertEquals(name, DynamoDBQueryInputFormat.getHashKeyName(conf));
+		assertNull(DynamoDBQueryInputFormat.getHashKeyName(conf));
+		
 		verify(conf);
 	}
 
@@ -305,18 +335,22 @@ public class DynamoDBQueryInputFormatTest {
 		Types hashKeyType = Types.STRING;
 		AttributeValue hashKeyValue =
 				new AttributeValue().withS(HASH_KEY_STRING);
+		String hashKeyName = "Id";
 		Types rangeKeyType = Types.NUMBER;
 		Collection<AttributeValue> rangeKeyValues =
 				new ArrayList<AttributeValue>();
 		rangeKeyValues.add(new AttributeValue().withN(RANGE_KEY_NUMBER));
+		String rangeKeyName = "range";
 		ComparisonOperator rangeKeyOpperator = ComparisonOperator.EQ;
 
-		DynamoDBQueryInputFormat.DynamoDBQueryInputSplit inputSplit =
-				new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+		DynamoDBQueryInputSplit inputSplit =
+				new DynamoDBQueryInputSplit(
 						hashKeyType,
 						hashKeyValue,
+						hashKeyName,
 						rangeKeyType,
 						rangeKeyValues,
+						rangeKeyName,
 						rangeKeyOpperator);
 
 		// write values to byte array
@@ -329,17 +363,19 @@ public class DynamoDBQueryInputFormatTest {
 		// read values back in from byte array
 		ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
 		DataInputStream in = new DataInputStream(bin);
-		DynamoDBQueryInputFormat.DynamoDBQueryInputSplit readSplit =
-				new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit();
+		DynamoDBQueryInputSplit readSplit =
+				new DynamoDBQueryInputSplit();
 		readSplit.readFields(in);
 
 		// verify loaded values
 		assertEquals(hashKeyType, readSplit.getHashKeyType());
 		assertEquals(HASH_KEY_STRING, readSplit.getHashKeyValue().getS());
+		assertEquals(hashKeyName, readSplit.getHashKeyName());
 		assertEquals(rangeKeyType, readSplit.getRangeKeyType());
 		assertEquals(rangeKeyOpperator, readSplit.getRangeKeyOperator());
 		assertArrayEquals(rangeKeyValues.toArray(), readSplit
 				.getRangeKeyValues().toArray());
+		assertEquals(rangeKeyName, readSplit.getRangeKeyName());
 		assertTrue(readSplit.hasRangeKey());
 	}
 

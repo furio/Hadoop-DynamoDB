@@ -16,12 +16,9 @@
 
 package com.willetinc.hadoop.mapreduce.dynamodb;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configurable;
@@ -34,116 +31,12 @@ import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.willetinc.hadoop.mapreduce.dynamodb.io.DynamoDBKeyWritable;
 
 public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable> 
 	extends InputFormat<LongWritable, T> implements Configurable {
-
-	public static class DynamoDBQueryInputSplit extends
-			DynamoDBScanInputFormat.DynamoDBInputSplit {
-
-		private Types hashKeyType = Types.STRING;
-
-		private AttributeValue hashKeyValue;
-
-		private Types rangeKeyType = Types.STRING;
-
-		private ComparisonOperator rangeKeyOperator = ComparisonOperator.EQ;
-
-		private Collection<AttributeValue> rangeKeyValues = Collections
-				.emptyList();
-
-		public DynamoDBQueryInputSplit() {
-
-		}
-
-		public DynamoDBQueryInputSplit(
-				Types hashKeyType,
-				AttributeValue hashKeyValue) {
-			this.hashKeyType = hashKeyType;
-			this.hashKeyValue = hashKeyValue;
-		}
-
-		public DynamoDBQueryInputSplit(
-				Types hashKeyType,
-				AttributeValue hashKeyValue,
-				Types rangeKeyType,
-				Collection<AttributeValue> rangeKeyValues,
-				ComparisonOperator rangeKeyOperator) {
-
-			this.hashKeyType = hashKeyType;
-			this.hashKeyValue = hashKeyValue;
-			this.rangeKeyType = rangeKeyType;
-			this.rangeKeyOperator = rangeKeyOperator;
-			this.rangeKeyValues = rangeKeyValues;
-		}
-
-		/**
-		 * @return The total row count in this split
-		 */
-		@Override
-		public long getLength() throws IOException {
-			return 0; // unfortunately, we don't know this.
-		}
-
-		@Override
-		public void readFields(DataInput in) throws IOException {
-			this.hashKeyType = Types.values()[in.readInt()];
-			this.hashKeyValue = AttributeValueIOUtils.read(hashKeyType, in);
-			this.rangeKeyType = Types.values()[in.readInt()];
-			this.rangeKeyValues =
-					AttributeValueIOUtils.readCollection(rangeKeyType, in);
-			this.rangeKeyOperator = ComparisonOperator.values()[in.readInt()];
-		}
-
-		@Override
-		public void write(DataOutput out) throws IOException {
-			out.writeInt(hashKeyType.ordinal());
-			AttributeValueIOUtils.write(hashKeyType, hashKeyValue, out);
-			out.writeInt(rangeKeyType.ordinal());
-			AttributeValueIOUtils.writeCollection(
-					rangeKeyType,
-					rangeKeyValues,
-					out);
-			out.writeInt(rangeKeyOperator.ordinal());
-		}
-
-		public AttributeValue getHashKeyValue() {
-			return hashKeyValue;
-		}
-
-		public Types getRangeType() {
-			return rangeKeyType;
-		}
-
-		public Types getHashKeyType() {
-			return hashKeyType;
-		}
-
-		public boolean hasHashKey() {
-			return hashKeyValue != null;
-		}
-
-		public Types getRangeKeyType() {
-			return rangeKeyType;
-		}
-
-		public boolean hasRangeKey() {
-			if (rangeKeyValues == null)
-				return false;
-			return rangeKeyValues.size() > 0;
-		}
-
-		public ComparisonOperator getRangeKeyOperator() {
-			return rangeKeyOperator;
-		}
-
-		public Collection<AttributeValue> getRangeKeyValues() {
-			return rangeKeyValues;
-		}
-	}
 	
 	private DynamoDBConfiguration dbConf;
 	
@@ -259,10 +152,16 @@ public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable>
 		String encodedValue = AttributeValueIOUtils.toString(type, value);
 		conf.set(DynamoDBConfiguration.HASH_KEY_VALUE_PROPERTY, encodedValue);
 	}
+	
+	public static String getHashKeyName(Configuration conf) {
+		return conf.get(DynamoDBConfiguration.HASH_KEY_NAME_PROPERTY);
+	}
+	
+	public static void setHashKeyName(Configuration conf, String value) {
+		conf.set(DynamoDBConfiguration.HASH_KEY_NAME_PROPERTY, value);
+	}
 
-	public static
-			boolean
-			getInterpolateAcrossRangeKeyValues(Configuration conf) {
+	public static boolean getInterpolateAcrossRangeKeyValues(Configuration conf) {
 		return conf.getBoolean(
 				DynamoDBConfiguration.RANGE_KEY_INTERPOLATE_PROPERTY,
 				false);
@@ -321,6 +220,14 @@ public class DynamoDBQueryInputFormat<T extends DynamoDBKeyWritable>
 		}
 
 		return values;
+	}
+	
+	public static String getRangeKeyName(Configuration conf) {
+		return conf.get(DynamoDBConfiguration.RANGE_KEY_NAME_PROPERTY);
+	}
+	
+	public static void setRangeKeyName(Configuration conf, String value) {
+		conf.set(DynamoDBConfiguration.RANGE_KEY_NAME_PROPERTY, value);
 	}
 
 	public static ComparisonOperator getRangeKeyComparisonOperator(

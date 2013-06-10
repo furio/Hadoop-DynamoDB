@@ -31,13 +31,8 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
-import com.willetinc.hadoop.mapreduce.dynamodb.AbstractSplitter;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBSplitter;
-import com.willetinc.hadoop.mapreduce.dynamodb.Types;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBQueryInputFormat.DynamoDBQueryInputSplit;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 
 public class AbstractSplitterTest {
 
@@ -51,9 +46,11 @@ public class AbstractSplitterTest {
 					List<InputSplit> splits,
 					Types hashKeyType,
 					AttributeValue hashKeyValue,
+					String hashKeyName,
 					Types rangeKeyType,
 					AttributeValue minRangeKeyValue,
 					AttributeValue maxRangeKeyValue,
+					String rangeKeyName,
 					int numRangeSplits) {
 				fail("This method should not be called!");
 
@@ -93,9 +90,11 @@ public class AbstractSplitterTest {
 					List<InputSplit> splits,
 					Types hashKeyType,
 					AttributeValue hashKeyValue,
+					String hashKeyName,
 					Types rangeKeyType,
 					AttributeValue minRangeKeyValue,
 					AttributeValue maxRangeKeyValue,
+					String rangeKeyName,
 					int numRangeSplits) {
 				fail("This method should not be called!");
 
@@ -140,9 +139,11 @@ public class AbstractSplitterTest {
 		final String VALUE = "007";
 		final Types hashKeyType = Types.NUMBER;
 		final AttributeValue hashKeyValue = new AttributeValue().withN(VALUE);
+		final String hashKeyName = "Id";
 		final Types rangeKeyType = Types.NUMBER;
 		final AttributeValue minRangeKeyValue = new AttributeValue().withN(Long.toString(Long.MIN_VALUE));
 		final AttributeValue maxRangeKeyValue = new AttributeValue().withN(Long.toString(Long.MIN_VALUE));
+		final String rangeKeyName = "range";
 		
 		DynamoDBSplitter splitter = new AbstractSplitter() {
 
@@ -152,29 +153,35 @@ public class AbstractSplitterTest {
 					List<InputSplit> splits,
 					Types inHashKeyType,
 					AttributeValue inHashKeyValue,
+					String inHashKeyName,
 					Types inRangeKeyType,
 					AttributeValue inMinRangeKeyValue,
 					AttributeValue inMaxRangeKeyValue,
+					String inRangeKeyName,
 					int numRangeSplits) {
 				
 				// check values
 				assertEquals(hashKeyType, inHashKeyType);
 				assertEquals(hashKeyValue, inHashKeyValue);
+				assertEquals(hashKeyName, inHashKeyName);
 				assertEquals(rangeKeyType, inRangeKeyType);
 				assertEquals(minRangeKeyValue, inMinRangeKeyValue);
 				assertEquals(maxRangeKeyValue, inMaxRangeKeyValue);
+				assertEquals(rangeKeyName, inRangeKeyName);
 				assertEquals(NUM_MAP_TASKS, numRangeSplits);
 				
 				List<AttributeValue> rangeKeyValues = new ArrayList<AttributeValue>();
 				rangeKeyValues.add(inMinRangeKeyValue);
 				rangeKeyValues.add(inMaxRangeKeyValue);
 				
-				DynamoDBQueryInputFormat.DynamoDBQueryInputSplit split =
-						new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+				DynamoDBQueryInputSplit split =
+						new DynamoDBQueryInputSplit(
 								hashKeyType,
 								hashKeyValue,
+								hashKeyName,
 								rangeKeyType,
 								rangeKeyValues,
+								rangeKeyName,
 								ComparisonOperator.BETWEEN);
 				
 				splits.add(split);
@@ -186,8 +193,10 @@ public class AbstractSplitterTest {
 		Configuration conf = job.getConfiguration();
 		conf.setInt("mapred.map.tasks", NUM_MAP_TASKS);
 		DynamoDBQueryInputFormat.setHashKeyValue(conf, hashKeyType, hashKeyValue);
+		DynamoDBQueryInputFormat.setHashKeyName(conf, hashKeyName);
 		DynamoDBQueryInputFormat.setRangeKeyType(conf, rangeKeyType);
 		DynamoDBQueryInputFormat.setRangeKeyInterpolateRange(conf, rangeKeyType, minRangeKeyValue, maxRangeKeyValue);
+		DynamoDBQueryInputFormat.setRangeKeyName(conf, rangeKeyName);
 
 		// generate input splits
 		List<InputSplit> splits = splitter.split(conf);

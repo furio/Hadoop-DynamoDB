@@ -30,15 +30,10 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.Key;
-import com.amazonaws.services.dynamodb.model.ScanRequest;
-import com.amazonaws.services.dynamodb.model.ScanResult;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBConfiguration;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBRecordReader;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanRecordReader;
-import com.willetinc.hadoop.mapreduce.dynamodb.DynamoDBScanInputFormat.DynamoDBInputSplit;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
 
 public class DynamoDBScanRecordReaderTest {
 	
@@ -52,11 +47,12 @@ public class DynamoDBScanRecordReaderTest {
 		DynamoDBConfiguration.setCredentals(conf, ACCESS_KEY, SECRET_KEY);
 		DynamoDBConfiguration dbConf = new DynamoDBConfiguration(conf);
 
-		DynamoDBInputSplit inputSplit = createStrictMock(DynamoDBInputSplit.class);
+		DynamoDBScanInputSplit inputSplit = createStrictMock(DynamoDBScanInputSplit.class);
 		AmazonDynamoDBClient client = createStrictMock(AmazonDynamoDBClient.class);
 		
 		ScanResult result = createStrictMock(ScanResult.class);
-		Key lastKey = createStrictMock(Key.class);
+		@SuppressWarnings("unchecked")
+		Map<String, AttributeValue> lastKey = createStrictMock(Map.class);
 		List<Map<String, AttributeValue>> list = new ArrayList<Map<String, AttributeValue>>();
 		Map<String, AttributeValue> value = new HashMap<String, AttributeValue>();
 		value.put("storeid", new AttributeValue().withN("22"));
@@ -65,11 +61,15 @@ public class DynamoDBScanRecordReaderTest {
 		list.add(value);
 		
 		// first set of results
+		expect(inputSplit.getTotalSegments()).andReturn(2);
+		expect(inputSplit.getSegment()).andReturn(1);
 		expect(client.scan(anyObject(ScanRequest.class))).andReturn(result);
 		expect(result.getLastEvaluatedKey()).andReturn(lastKey);
 		expect(result.getItems()).andReturn(list);
 		
 		// second set of results
+		expect(inputSplit.getTotalSegments()).andReturn(2);
+		expect(inputSplit.getSegment()).andReturn(1);
 		expect(client.scan(anyObject(ScanRequest.class))).andReturn(result);
 		expect(result.getLastEvaluatedKey()).andReturn(null);
 		expect(result.getItems()).andReturn(list);

@@ -25,8 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.InputSplit;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 
 /**
  * Implements Splitter over DynamoDB Number datatype values.
@@ -44,9 +44,11 @@ public class BigDecimalSplitter extends AbstractSplitter {
 			List<InputSplit> splits,
 			Types hashKeyType,
 			AttributeValue hashKeyValue,
+			String hashKeyName,
 			Types rangeKeyType,
 			AttributeValue minRangeKeyValue,
 			AttributeValue maxRangeKeyValue,
+			String rangeKeyName,
 			int numRangeSplits) {
 
 		BigDecimal numSplits = BigDecimal.valueOf(numRangeSplits);
@@ -66,11 +68,13 @@ public class BigDecimalSplitter extends AbstractSplitter {
 			rangeKeyValues.add(new AttributeValue().withN(start.toString()));
 			rangeKeyValues.add(new AttributeValue().withN(end.toString()));
 
-			splits.add(new DynamoDBQueryInputFormat.DynamoDBQueryInputSplit(
+			splits.add(new DynamoDBQueryInputSplit(
 					hashKeyType,
 					hashKeyValue,
+					hashKeyName,
 					rangeKeyType,
 					rangeKeyValues,
+					rangeKeyName,
 					ComparisonOperator.BETWEEN));
 
 			// set start to end of last interval plus minimum positive value
