@@ -26,6 +26,7 @@
 			<artifactId>aws-java-sdk</artifactId>
 			<version>1.4.5</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
